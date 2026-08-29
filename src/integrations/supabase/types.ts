@@ -17,7 +17,11 @@ export type Database = {
       game_results: {
         Row: {
           created_at: string
+          duration_ms: number
           id: string
+          match_id: string | null
+          mode: string
+          moves: number
           players: number
           points: number
           result: string
@@ -25,7 +29,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          duration_ms?: number
           id?: string
+          match_id?: string | null
+          mode?: string
+          moves?: number
           players?: number
           points?: number
           result: string
@@ -33,7 +41,11 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          duration_ms?: number
           id?: string
+          match_id?: string | null
+          mode?: string
+          moves?: number
           players?: number
           points?: number
           result?: string
@@ -83,8 +95,18 @@ export type Database = {
     }
     Functions: {
       record_game_result: {
-        Args: { _players: number; _result: string }
-        Returns: undefined
+        Args: {
+          _duration_ms?: number
+          _match_id: string
+          _mode?: string
+          _moves?: number
+          _players: number
+          _result: string
+        }
+        Returns: {
+          duplicate: boolean
+          points: number
+        }[]
       }
     }
     Enums: {
