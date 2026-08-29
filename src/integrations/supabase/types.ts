@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      chest_defs: {
+        Row: {
+          active: boolean
+          code: string
+          cooldown_minutes: number
+          cost_diamonds: number
+          cost_gold: number
+          description: string
+          sort: number
+          tier: number
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          cooldown_minutes?: number
+          cost_diamonds?: number
+          cost_gold?: number
+          description: string
+          sort?: number
+          tier?: number
+          title: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          cooldown_minutes?: number
+          cost_diamonds?: number
+          cost_gold?: number
+          description?: string
+          sort?: number
+          tier?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      economy_transactions: {
+        Row: {
+          created_at: string
+          detail: Json
+          diamonds_delta: number
+          gold_delta: number
+          id: string
+          kind: string
+          user_id: string
+          xp_delta: number
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          diamonds_delta?: number
+          gold_delta?: number
+          id?: string
+          kind: string
+          user_id: string
+          xp_delta?: number
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          diamonds_delta?: number
+          gold_delta?: number
+          id?: string
+          kind?: string
+          user_id?: string
+          xp_delta?: number
+        }
+        Relationships: []
+      }
       game_results: {
         Row: {
           created_at: string
@@ -53,41 +122,166 @@ export type Database = {
         }
         Relationships: []
       }
+      mission_defs: {
+        Row: {
+          active: boolean
+          code: string
+          description: string
+          goal: number
+          metric: string
+          period: string
+          reward_diamonds: number
+          reward_gold: number
+          reward_xp: number
+          sort: number
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          description: string
+          goal: number
+          metric: string
+          period: string
+          reward_diamonds?: number
+          reward_gold?: number
+          reward_xp?: number
+          sort?: number
+          title: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          description?: string
+          goal?: number
+          metric?: string
+          period?: string
+          reward_diamonds?: number
+          reward_gold?: number
+          reward_xp?: number
+          sort?: number
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar: string
+          banner: string
           created_at: string
+          diamonds: number
           display_name: string
+          frame: string
           games: number
+          gold: number
           id: string
+          level: number
           losses: number
           points: number
           updated_at: string
           wins: number
+          xp: number
         }
         Insert: {
           avatar?: string
+          banner?: string
           created_at?: string
+          diamonds?: number
           display_name?: string
+          frame?: string
           games?: number
+          gold?: number
           id: string
+          level?: number
           losses?: number
           points?: number
           updated_at?: string
           wins?: number
+          xp?: number
         }
         Update: {
           avatar?: string
+          banner?: string
           created_at?: string
+          diamonds?: number
           display_name?: string
+          frame?: string
           games?: number
+          gold?: number
           id?: string
+          level?: number
           losses?: number
           points?: number
           updated_at?: string
           wins?: number
+          xp?: number
         }
         Relationships: []
+      }
+      user_items: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          kind: string
+          rarity: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          kind: string
+          rarity?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          rarity?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_missions: {
+        Row: {
+          claimed_at: string | null
+          code: string
+          id: string
+          period_start: string
+          progress: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          code: string
+          id?: string
+          period_start: string
+          progress?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          code?: string
+          id?: string
+          period_start?: string
+          progress?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_missions_code_fkey"
+            columns: ["code"]
+            isOneToOne: false
+            referencedRelation: "mission_defs"
+            referencedColumns: ["code"]
+          },
+        ]
       }
     }
     Views: {
