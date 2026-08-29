@@ -14,13 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      game_results: {
+        Row: {
+          created_at: string
+          id: string
+          players: number
+          points: number
+          result: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          players?: number
+          points?: number
+          result: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          players?: number
+          points?: number
+          result?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar: string
+          created_at: string
+          display_name: string
+          games: number
+          id: string
+          losses: number
+          points: number
+          updated_at: string
+          wins: number
+        }
+        Insert: {
+          avatar?: string
+          created_at?: string
+          display_name?: string
+          games?: number
+          id: string
+          losses?: number
+          points?: number
+          updated_at?: string
+          wins?: number
+        }
+        Update: {
+          avatar?: string
+          created_at?: string
+          display_name?: string
+          games?: number
+          id?: string
+          losses?: number
+          points?: number
+          updated_at?: string
+          wins?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      record_game_result: {
+        Args: { _players: number; _result: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
