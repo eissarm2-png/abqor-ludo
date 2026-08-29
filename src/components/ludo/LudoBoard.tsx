@@ -2,7 +2,7 @@ import { SEATS } from "@/lib/ludo/board";
 import { UNIT as U, centerFor, tokenPlacements } from "@/lib/ludo/layout";
 import type { GameState, Move } from "@/lib/ludo/engine";
 import { cn } from "@/lib/utils";
-import boardAsset from "@/assets/ludo-board.png.asset.json";
+import { BoardCanvas } from "./BoardCanvas";
 
 type Props = {
   state: GameState;
@@ -26,12 +26,7 @@ export function LudoBoard({ state, moves, onTokenClick }: Props) {
 
   return (
     <div className="relative aspect-square w-full select-none">
-      <img
-        src={boardAsset.url}
-        alt="لوحة اللودو"
-        className="pointer-events-none absolute inset-0 h-full w-full rounded-[0.35rem]"
-        draggable={false}
-      />
+      <BoardCanvas />
 
       {/* أهداف الحركة */}
       {moves.map((m) => {
