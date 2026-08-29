@@ -288,6 +288,80 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bump_missions: {
+        Args: { _amount: number; _metric: string; _uid: string }
+        Returns: undefined
+      }
+      claim_mission: {
+        Args: { _code: string }
+        Returns: {
+          diamonds: number
+          gold: number
+          ok: boolean
+          reason: string
+          xp: number
+        }[]
+      }
+      get_chests: {
+        Args: never
+        Returns: {
+          code: string
+          cooldown_minutes: number
+          cost_diamonds: number
+          cost_gold: number
+          description: string
+          next_free_at: string
+          sort: number
+          tier: number
+          title: string
+        }[]
+      }
+      get_missions: {
+        Args: never
+        Returns: {
+          claimable: boolean
+          claimed: boolean
+          code: string
+          description: string
+          goal: number
+          period: string
+          period_start: string
+          progress: number
+          resets_at: string
+          reward_diamonds: number
+          reward_gold: number
+          reward_xp: number
+          sort: number
+          title: string
+        }[]
+      }
+      grant_rewards: {
+        Args: {
+          _detail: Json
+          _diamonds: number
+          _gold: number
+          _kind: string
+          _uid: string
+          _xp: number
+        }
+        Returns: undefined
+      }
+      mission_period_start: { Args: { _period: string }; Returns: string }
+      open_chest: {
+        Args: { _code: string }
+        Returns: {
+          diamonds: number
+          gold: number
+          is_new: boolean
+          item_code: string
+          item_kind: string
+          next_free_at: string
+          ok: boolean
+          rarity: string
+          reason: string
+          xp: number
+        }[]
+      }
       record_game_result: {
         Args: {
           _duration_ms?: number
@@ -299,7 +373,9 @@ export type Database = {
         }
         Returns: {
           duplicate: boolean
+          gold: number
           points: number
+          xp: number
         }[]
       }
     }
