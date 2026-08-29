@@ -63,7 +63,7 @@ export function Dice({ value, rolling, disabled, onRoll, seatToken, verified = f
       disabled={disabled}
       aria-label="ارمِ النرد"
       className={cn(
-        "dice-stage press-3d group relative grid h-[5.2rem] w-[5.2rem] shrink-0 place-items-center",
+        "dice-stage press-3d group relative grid h-[6.2rem] w-[6.2rem] shrink-0 place-items-center",
         disabled && "opacity-80",
       )}
       style={{ ["--seat" as string]: `var(--ludo-${seatToken})` }}
