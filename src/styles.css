@@ -93,7 +93,7 @@
   --ludo-board: #16509f;
   --ludo-line: #06204f;
   --ludo-ink: #06204f;
-  --shadow-token: 0 2px 0 oklch(0.18 0.04 300), 0 0 10px color-mix(in oklab, currentColor 40%, transparent);
+  --shadow-token: 0 2px 0 oklch(0.22 0.08 262), 0 0 10px color-mix(in oklab, currentColor 40%, transparent);
   --shadow-board: 0 0 0 3px var(--ludo-gold), 0 0 0 7px var(--ludo-purple), 0 0 26px color-mix(in oklab, var(--ludo-pink) 65%, transparent);
   --gradient-board: linear-gradient(135deg, color-mix(in oklab, var(--ludo-gold) 10%, transparent), transparent 42%);
 }
@@ -917,8 +917,8 @@
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 40%, oklch(0.32 0.16 330 / 0.9), transparent 60%),
-    linear-gradient(180deg, #1a0416, #0b0209 60%, #12020c);
+    radial-gradient(circle at 50% 40%, oklch(0.45 0.16 262 / 0.9), transparent 60%),
+    linear-gradient(180deg, #0f3a86, #06204f 60%, #04173a);
 }
 .splash-halo {
   position: absolute;
