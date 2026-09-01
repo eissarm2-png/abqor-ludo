@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          detail: Json
+          id: string
+          target_user: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_user?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          target_user?: string | null
+        }
+        Relationships: []
+      }
       chest_defs: {
         Row: {
           active: boolean
@@ -167,6 +194,8 @@ export type Database = {
       profiles: {
         Row: {
           avatar: string
+          banned: boolean
+          banned_reason: string | null
           banner: string
           created_at: string
           diamonds: number
@@ -184,6 +213,8 @@ export type Database = {
         }
         Insert: {
           avatar?: string
+          banned?: boolean
+          banned_reason?: string | null
           banner?: string
           created_at?: string
           diamonds?: number
@@ -201,6 +232,8 @@ export type Database = {
         }
         Update: {
           avatar?: string
+          banned?: boolean
+          banned_reason?: string | null
           banner?: string
           created_at?: string
           diamonds?: number
@@ -215,6 +248,84 @@ export type Database = {
           updated_at?: string
           wins?: number
           xp?: number
+        }
+        Relationships: []
+      }
+      store_items: {
+        Row: {
+          active: boolean
+          code: string
+          cost_diamonds: number
+          cost_gold: number
+          description: string
+          kind: string
+          rarity: string
+          sort: number
+          title: string
+          value: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          cost_diamonds?: number
+          cost_gold?: number
+          description?: string
+          kind?: string
+          rarity?: string
+          sort?: number
+          title: string
+          value?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          cost_diamonds?: number
+          cost_gold?: number
+          description?: string
+          kind?: string
+          rarity?: string
+          sort?: number
+          title?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      turn_events: {
+        Row: {
+          accepted: boolean
+          created_at: string
+          elapsed_ms: number
+          id: string
+          kind: string
+          limit_ms: number
+          match_id: string
+          reason: string | null
+          turn: number
+          user_id: string
+        }
+        Insert: {
+          accepted?: boolean
+          created_at?: string
+          elapsed_ms?: number
+          id?: string
+          kind: string
+          limit_ms?: number
+          match_id: string
+          reason?: string | null
+          turn?: number
+          user_id: string
+        }
+        Update: {
+          accepted?: boolean
+          created_at?: string
+          elapsed_ms?: number
+          id?: string
+          kind?: string
+          limit_ms?: number
+          match_id?: string
+          reason?: string | null
+          turn?: number
+          user_id?: string
         }
         Relationships: []
       }
@@ -283,11 +394,194 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_adjust_economy: {
+        Args: {
+          _diamonds: number
+          _gold: number
+          _note?: string
+          _uid: string
+          _xp: number
+        }
+        Returns: {
+          diamonds: number
+          gold: number
+          level: number
+          xp: number
+        }[]
+      }
+      admin_grant_item: {
+        Args: { _code: string; _kind: string; _rarity?: string; _uid: string }
+        Returns: undefined
+      }
+      admin_list_users: {
+        Args: { _limit?: number; _offset?: number; _search?: string }
+        Returns: {
+          avatar: string
+          banned: boolean
+          banned_reason: string
+          created_at: string
+          diamonds: number
+          display_name: string
+          email: string
+          games: number
+          gold: number
+          id: string
+          is_admin: boolean
+          level: number
+          losses: number
+          points: number
+          wins: number
+          xp: number
+        }[]
+      }
+      admin_logs_list: {
+        Args: { _limit?: number }
+        Returns: {
+          action: string
+          admin_name: string
+          created_at: string
+          detail: Json
+          id: string
+          target_name: string
+        }[]
+      }
+      admin_recent_matches: {
+        Args: { _limit?: number }
+        Returns: {
+          created_at: string
+          display_name: string
+          duration_ms: number
+          id: string
+          mode: string
+          moves: number
+          players: number
+          points: number
+          result: string
+        }[]
+      }
+      admin_set_ban: {
+        Args: { _banned: boolean; _reason?: string; _uid: string }
+        Returns: undefined
+      }
+      admin_set_role: {
+        Args: {
+          _grant: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+          _uid: string
+        }
+        Returns: undefined
+      }
+      admin_stats: {
+        Args: never
+        Returns: {
+          admins: number
+          banned: number
+          diamonds: number
+          domino_matches: number
+          gold: number
+          ludo_matches: number
+          matches: number
+          matches_24h: number
+          users: number
+        }[]
+      }
+      admin_turn_events: {
+        Args: { _limit?: number }
+        Returns: {
+          accepted: boolean
+          created_at: string
+          display_name: string
+          elapsed_ms: number
+          id: string
+          kind: string
+          limit_ms: number
+          match_id: string
+          reason: string
+          turn: number
+        }[]
+      }
+      admin_update_profile: {
+        Args: {
+          _avatar?: string
+          _banner?: string
+          _display_name?: string
+          _frame?: string
+          _level?: number
+          _uid: string
+        }
+        Returns: undefined
+      }
+      admin_upsert_chest: {
+        Args: {
+          _active: boolean
+          _code: string
+          _cooldown_minutes: number
+          _cost_diamonds: number
+          _cost_gold: number
+          _description: string
+          _sort: number
+          _tier: number
+          _title: string
+        }
+        Returns: undefined
+      }
+      admin_upsert_mission: {
+        Args: {
+          _active: boolean
+          _code: string
+          _description: string
+          _goal: number
+          _metric: string
+          _period: string
+          _reward_diamonds: number
+          _reward_gold: number
+          _reward_xp: number
+          _sort: number
+          _title: string
+        }
+        Returns: undefined
+      }
+      admin_upsert_store_item: {
+        Args: {
+          _active: boolean
+          _code: string
+          _cost_diamonds: number
+          _cost_gold: number
+          _description: string
+          _kind: string
+          _rarity: string
+          _sort: number
+          _title: string
+          _value: string
+        }
+        Returns: undefined
+      }
       bump_missions: {
         Args: { _amount: number; _metric: string; _uid: string }
         Returns: undefined
@@ -346,6 +640,18 @@ export type Database = {
         }
         Returns: undefined
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
+      log_admin: {
+        Args: { _action: string; _detail: Json; _target: string }
+        Returns: undefined
+      }
       mission_period_start: { Args: { _period: string }; Returns: string }
       open_chest: {
         Args: { _code: string }
@@ -378,9 +684,22 @@ export type Database = {
           xp: number
         }[]
       }
+      record_turn_event: {
+        Args: {
+          _accepted: boolean
+          _elapsed_ms: number
+          _kind: string
+          _limit_ms: number
+          _match_id: string
+          _reason: string
+          _turn: number
+        }
+        Returns: undefined
+      }
+      require_admin: { Args: never; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -507,6 +826,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
