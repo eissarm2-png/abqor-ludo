@@ -1137,7 +1137,7 @@ function BottomNav({ active, navigate }: { active: Screen; navigate: (s: Screen)
     ["settings", navSettings, "الإعدادات"],
   ];
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid w-full max-w-md grid-cols-5 gap-1 border-t-2 border-ludo-gold/70 bg-[linear-gradient(180deg,#4a0d33,#170512)] px-2 pb-[max(.45rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(0_0_0/.55)]">
+    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid w-full max-w-md grid-cols-5 gap-1 border-t-2 border-ludo-gold/70 bg-[linear-gradient(180deg,#0f3a86,#06204f)] px-2 pb-[max(.45rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(0_0_0/.55)]">
       {links.map(([id, icon, label]) => (
         <button
           type="button"
