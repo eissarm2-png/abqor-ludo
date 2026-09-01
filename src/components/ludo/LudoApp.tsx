@@ -953,7 +953,7 @@ function SmallTile({ img, label, onClick }: { img: string; label: string; onClic
     <button
       type="button"
       onClick={onClick}
-      className="press-3d reflect-gloss relative grid place-items-center gap-1 rounded-xl border border-ludo-gold/25 bg-black/30 p-2 shadow-[inset_0_1px_0_rgb(255_255_255/.18),0_4px_0_#2c0722,0_8px_16px_rgb(0_0_0/.45)]"
+      className="press-3d reflect-gloss relative grid place-items-center gap-1 rounded-xl border border-ludo-gold/25 bg-black/30 p-2 shadow-[inset_0_1px_0_rgb(255_255_255/.18),0_4px_0_#0a2b66,0_8px_16px_rgb(0_0_0/.45)]"
     >
       <img
         src={img}
@@ -1137,7 +1137,7 @@ function BottomNav({ active, navigate }: { active: Screen; navigate: (s: Screen)
     ["settings", navSettings, "الإعدادات"],
   ];
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid w-full max-w-md grid-cols-5 gap-1 border-t-2 border-ludo-gold/70 bg-[linear-gradient(180deg,#4a0d33,#170512)] px-2 pb-[max(.45rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(0_0_0/.55)]">
+    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid w-full max-w-md grid-cols-5 gap-1 border-t-2 border-ludo-gold/70 bg-[linear-gradient(180deg,#0f3a86,#06204f)] px-2 pb-[max(.45rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(0_0_0/.55)]">
       {links.map(([id, icon, label]) => (
         <button
           type="button"

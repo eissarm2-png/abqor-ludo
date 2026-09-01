@@ -53,47 +53,47 @@
 
 :root {
   --radius: 0.75rem;
-  --background: #260a1d;
+  --background: #0b2e73;
   --foreground: oklch(0.97 0.02 95);
-  --card: #45103a;
+  --card: #124395;
   --card-foreground: oklch(0.97 0.02 95);
-  --popover: #3b0d30;
+  --popover: #0f3a86;
   --popover-foreground: oklch(0.97 0.02 95);
   --primary: oklch(0.8 0.16 85);
-  --primary-foreground: oklch(0.18 0.08 304);
-  --secondary: oklch(0.36 0.16 320);
+  --primary-foreground: oklch(0.22 0.09 262);
+  --secondary: oklch(0.42 0.16 260);
   --secondary-foreground: oklch(0.98 0.01 90);
-  --muted: oklch(0.27 0.08 305);
-  --muted-foreground: oklch(0.77 0.05 305);
-  --accent: oklch(0.67 0.24 345);
+  --muted: oklch(0.34 0.09 262);
+  --muted-foreground: oklch(0.84 0.05 255);
+  --accent: oklch(0.83 0.16 85);
   --accent-foreground: oklch(0.98 0.01 90);
   --destructive: oklch(0.62 0.25 25);
   --destructive-foreground: oklch(0.98 0.01 90);
   --border: oklch(0.76 0.15 84 / 45%);
-  --input: oklch(0.35 0.1 308);
+  --input: oklch(0.38 0.1 262);
   --ring: oklch(0.8 0.16 85);
   /* لوحة ألوان مأخوذة من الصور المرجعية: أرجواني ماجنتا + ذهب + وردي + أخضر */
-  --ludo-deep: #150410;
-  --ludo-purple: #4a0d33;
-  --ludo-magenta: #7d1450;
-  --ludo-plum: #330a26;
-  --ludo-panel: #45103a;
-  --ludo-gold: #f8c93c;
+  --ludo-deep: #06204f;
+  --ludo-purple: #0f3a86;
+  --ludo-magenta: #1a56b8;
+  --ludo-plum: #0a2b66;
+  --ludo-panel: #124395;
+  --ludo-gold: #f6c32c;
   --ludo-gold-dark: #b8791b;
-  --ludo-pink: #ec2f6b;
-  --ludo-pink-dark: #b01248;
+  --ludo-pink: #ffd45e;
+  --ludo-pink-dark: #c8901a;
   --ludo-green: #7cc242;
   --ludo-green-dark: #4d8a22;
-  --ludo-soft: #e6c7dd;
+  --ludo-soft: #cfe0ff;
   --ludo-ruby: #ea4937;
   --ludo-palm: #22ca57;
   --ludo-amber: #fac61f;
   --ludo-lagoon: #1e90ff;
   --ludo-surface: #f7f2e2;
-  --ludo-board: #5d1442;
-  --ludo-line: #2a0820;
-  --ludo-ink: #2a0820;
-  --shadow-token: 0 2px 0 oklch(0.18 0.04 300), 0 0 10px color-mix(in oklab, currentColor 40%, transparent);
+  --ludo-board: #16509f;
+  --ludo-line: #06204f;
+  --ludo-ink: #06204f;
+  --shadow-token: 0 2px 0 oklch(0.22 0.08 262), 0 0 10px color-mix(in oklab, currentColor 40%, transparent);
   --shadow-board: 0 0 0 3px var(--ludo-gold), 0 0 0 7px var(--ludo-purple), 0 0 26px color-mix(in oklab, var(--ludo-pink) 65%, transparent);
   --gradient-board: linear-gradient(135deg, color-mix(in oklab, var(--ludo-gold) 10%, transparent), transparent 42%);
 }
@@ -110,7 +110,7 @@
   overflow-x: hidden;
   color: var(--foreground);
   background:
-    radial-gradient(120% 60% at 50% 0%, #8d1a5c 0%, #6a1247 26%, #440d31 52%, #240818 76%, #12040e 100%);
+    radial-gradient(120% 60% at 50% 0%, #1c5fc4 0%, #14499f 26%, #0f3a86 52%, #0a2b66 76%, #06204f 100%);
 }
 .ludo-shell::before {
   content: "";
@@ -503,7 +503,7 @@
   gap: .5rem;
   padding: .3rem .9rem .3rem .4rem;
   border-radius: 999px;
-  background: linear-gradient(180deg, #2a0a20, #170512);
+  background: linear-gradient(180deg, #0d3378, #06204f);
   border: 1px solid rgb(255 255 255 / .12);
   color: #fff;
   font-weight: 800;
@@ -727,12 +727,12 @@
   position: relative;
   border-radius: 1.1rem;
   padding: .9rem;
-  background: linear-gradient(180deg, #7a2f76 0%, #5d1a52 42%, #45103a 100%);
+  background: linear-gradient(180deg, #1b5cc0 0%, #124395 42%, #0d3378 100%);
   border: 1px solid rgb(255 255 255 / .18);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / .28),
     inset 0 -10px 22px rgb(0 0 0 / .35),
-    0 6px 0 #2c0722,
+    0 6px 0 #0a2b66,
     0 12px 22px rgb(0 0 0 / .45);
 }
 .glossy-card::after {
@@ -763,8 +763,8 @@
 .mode-tile b { color: #fff; font-size: .95rem; text-shadow: 0 2px 0 rgb(0 0 0 / .4); }
 .mode-tile small { color: rgb(255 255 255 / .78); font-size: .68rem; }
 .tile-gold { --tile-a: #f7b93d; --tile-b: #e0902a; --tile-c: #a9611a; }
-.tile-violet { --tile-a: #8a63d6; --tile-b: #6a3fb5; --tile-c: #45237e; }
-.tile-pink { --tile-a: #f4568a; --tile-b: #d62762; --tile-c: #91123f; }
+.tile-violet { --tile-a: #3b7ff0; --tile-b: #1d55c4; --tile-c: #12398a; }
+.tile-pink { --tile-a: #ef4a48; --tile-b: #cf2222; --tile-c: #8d1414; }
 .tile-green { --tile-a: #8fd257; --tile-b: #66ab31; --tile-c: #3f7318; }
 
 .nav-3d {
@@ -803,7 +803,7 @@
   border-radius: 999px;
   object-fit: cover;
   display: grid; place-items: center;
-  background: #2a0820;
+  background: #06204f;
   font-size: 1.35rem;
 }
 .level-chip {
@@ -917,8 +917,8 @@
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 50% 40%, oklch(0.32 0.16 330 / 0.9), transparent 60%),
-    linear-gradient(180deg, #1a0416, #0b0209 60%, #12020c);
+    radial-gradient(circle at 50% 40%, oklch(0.45 0.16 262 / 0.9), transparent 60%),
+    linear-gradient(180deg, #0f3a86, #06204f 60%, #04173a);
 }
 .splash-halo {
   position: absolute;
