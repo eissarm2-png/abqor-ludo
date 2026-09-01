@@ -763,8 +763,8 @@
 .mode-tile b { color: #fff; font-size: .95rem; text-shadow: 0 2px 0 rgb(0 0 0 / .4); }
 .mode-tile small { color: rgb(255 255 255 / .78); font-size: .68rem; }
 .tile-gold { --tile-a: #f7b93d; --tile-b: #e0902a; --tile-c: #a9611a; }
-.tile-violet { --tile-a: #8a63d6; --tile-b: #6a3fb5; --tile-c: #45237e; }
-.tile-pink { --tile-a: #f4568a; --tile-b: #d62762; --tile-c: #91123f; }
+.tile-violet { --tile-a: #3b7ff0; --tile-b: #1d55c4; --tile-c: #12398a; }
+.tile-pink { --tile-a: #ef4a48; --tile-b: #cf2222; --tile-c: #8d1414; }
 .tile-green { --tile-a: #8fd257; --tile-b: #66ab31; --tile-c: #3f7318; }
 
 .nav-3d {

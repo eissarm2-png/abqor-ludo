@@ -953,7 +953,7 @@ function SmallTile({ img, label, onClick }: { img: string; label: string; onClic
     <button
       type="button"
       onClick={onClick}
-      className="press-3d reflect-gloss relative grid place-items-center gap-1 rounded-xl border border-ludo-gold/25 bg-black/30 p-2 shadow-[inset_0_1px_0_rgb(255_255_255/.18),0_4px_0_#2c0722,0_8px_16px_rgb(0_0_0/.45)]"
+      className="press-3d reflect-gloss relative grid place-items-center gap-1 rounded-xl border border-ludo-gold/25 bg-black/30 p-2 shadow-[inset_0_1px_0_rgb(255_255_255/.18),0_4px_0_#0a2b66,0_8px_16px_rgb(0_0_0/.45)]"
     >
       <img
         src={img}
