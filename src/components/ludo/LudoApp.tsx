@@ -640,12 +640,14 @@ function LudoShell() {
     <div className="ludo-shell min-h-screen" dir="rtl">
       <Starfield />
       <div className="relative mx-auto min-h-screen w-full max-w-md px-3 pb-24 pt-3 sm:pt-5">
+        {screen !== "home" && (
         <TopBar
           muted={muted}
           onMute={() => toggleMute()}
           onMenu={() => navigate("home")}
           onAccount={() => navigate("account")}
         />
+        )}
         {screen === "home" && <AnnouncementBar />}
         {screen === "home" && (
           <HomeScreen
@@ -1259,11 +1261,11 @@ function SettingBlock({ title, children }: { title: string; children: React.Reac
 
 function BottomNav({ active, navigate }: { active: Screen; navigate: (s: Screen) => void }) {
   const links: [Screen, string, string][] = [
-    ["home", navHome, "الرئيسية"],
-    ["leaderboard", navTrophy, "المتصدرون"],
     ["chests", navStore, "المتجر"],
-    ["account", navFriends, "حسابي"],
-    ["settings", navSettings, "الإعدادات"],
+    ["rooms", navFriends, "الأصدقاء"],
+    ["home", navHome, "الصفحة الرئيسية"],
+    ["leaderboard", navTrophy, "الأندية"],
+    ["opened", chestOpen, "جوائز"],
   ];
   return (
     <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid w-full max-w-md grid-cols-5 gap-1 border-t-2 border-ludo-gold/70 bg-[linear-gradient(180deg,#5c1b52,#2c0824)] px-2 pb-[max(.45rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(0_0_0/.55)]">
