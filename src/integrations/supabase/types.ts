@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      announcements: {
+        Row: {
+          active: boolean
+          body: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          kind: string
+          link: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          link?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          link?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chest_defs: {
         Row: {
           active: boolean
@@ -251,6 +290,127 @@ export type Database = {
         }
         Relationships: []
       }
+      room_members: {
+        Row: {
+          avatar: string
+          display_name: string
+          id: string
+          joined_at: string
+          ready: boolean
+          room_id: string
+          seat: number
+          user_id: string
+        }
+        Insert: {
+          avatar?: string
+          display_name?: string
+          id?: string
+          joined_at?: string
+          ready?: boolean
+          room_id: string
+          seat?: number
+          user_id: string
+        }
+        Update: {
+          avatar?: string
+          display_name?: string
+          id?: string
+          joined_at?: string
+          ready?: boolean
+          room_id?: string
+          seat?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_members_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_messages: {
+        Row: {
+          body: string
+          created_at: string
+          display_name: string
+          id: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          code: string
+          created_at: string
+          host_id: string
+          id: string
+          is_public: boolean
+          match_id: string | null
+          max_players: number
+          mode: string
+          name: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          host_id: string
+          id?: string
+          is_public?: boolean
+          match_id?: string | null
+          max_players?: number
+          mode?: string
+          name: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          host_id?: string
+          id?: string
+          is_public?: boolean
+          match_id?: string | null
+          max_players?: number
+          mode?: string
+          name?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       store_items: {
         Row: {
           active: boolean
@@ -435,9 +595,32 @@ export type Database = {
           xp: number
         }[]
       }
+      admin_delete_announcement: { Args: { _id: string }; Returns: undefined }
+      admin_delete_room: { Args: { _room: string }; Returns: undefined }
       admin_grant_item: {
         Args: { _code: string; _kind: string; _rarity?: string; _uid: string }
         Returns: undefined
+      }
+      admin_list_announcements: {
+        Args: never
+        Returns: {
+          active: boolean
+          body: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          kind: string
+          link: string
+          title: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "announcements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       admin_list_users: {
         Args: { _limit?: number; _offset?: number; _search?: string }
@@ -484,6 +667,33 @@ export type Database = {
           points: number
           result: string
         }[]
+      }
+      admin_rooms_list: {
+        Args: { _limit?: number }
+        Returns: {
+          code: string
+          created_at: string
+          host_name: string
+          id: string
+          is_public: boolean
+          max_players: number
+          members: number
+          mode: string
+          name: string
+          status: string
+        }[]
+      }
+      admin_save_announcement: {
+        Args: {
+          _active: boolean
+          _body: string
+          _expires_at: string
+          _id: string
+          _kind: string
+          _link: string
+          _title: string
+        }
+        Returns: string
       }
       admin_set_ban: {
         Args: { _banned: boolean; _reason?: string; _uid: string }
@@ -596,6 +806,14 @@ export type Database = {
           xp: number
         }[]
       }
+      create_room: {
+        Args: { _max: number; _mode: string; _name: string; _public: boolean }
+        Returns: {
+          code: string
+          room_id: string
+        }[]
+      }
+      gen_room_code: { Args: never; Returns: string }
       get_chests: {
         Args: never
         Returns: {
@@ -647,12 +865,48 @@ export type Database = {
         }
         Returns: boolean
       }
+      host_update_room: {
+        Args: { _max: number; _mode: string; _public: boolean; _room: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
+      is_room_host: { Args: { _room: string; _uid: string }; Returns: boolean }
+      is_room_member: {
+        Args: { _room: string; _uid: string }
+        Returns: boolean
+      }
+      join_room: {
+        Args: { _code: string }
+        Returns: {
+          ok: boolean
+          reason: string
+          room_id: string
+        }[]
+      }
+      leave_room: { Args: { _room: string }; Returns: undefined }
+      list_public_rooms: {
+        Args: never
+        Returns: {
+          code: string
+          host_name: string
+          id: string
+          max_players: number
+          members: number
+          mode: string
+          name: string
+        }[]
+      }
       log_admin: {
         Args: { _action: string; _detail: Json; _target: string }
         Returns: undefined
       }
       mission_period_start: { Args: { _period: string }; Returns: string }
+      my_active_room: {
+        Args: never
+        Returns: {
+          room_id: string
+        }[]
+      }
       open_chest: {
         Args: { _code: string }
         Returns: {
@@ -697,6 +951,19 @@ export type Database = {
         Returns: undefined
       }
       require_admin: { Args: never; Returns: string }
+      reset_room: { Args: { _room: string }; Returns: undefined }
+      set_room_ready: {
+        Args: { _ready: boolean; _room: string }
+        Returns: undefined
+      }
+      start_room_match: {
+        Args: { _room: string }
+        Returns: {
+          match_id: string
+          ok: boolean
+          reason: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
@@ -715,12 +982,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -744,11 +1011,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -769,11 +1036,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -794,11 +1061,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -811,11 +1078,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
