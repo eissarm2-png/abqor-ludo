@@ -6,6 +6,8 @@ import {
   Gem,
   Gift,
   ListOrdered,
+  Megaphone,
+  Trash2,
   Search,
   ShieldCheck,
   ShieldX,
@@ -38,13 +40,24 @@ import {
   type AdminStats,
   type AdminUser,
 } from "@/lib/admin.functions";
+import {
+  adminDeleteAnnouncement,
+  adminDeleteRoom,
+  adminListAnnouncements,
+  adminListRooms,
+  adminSaveAnnouncement,
+  type AdminRoom,
+  type Announcement,
+} from "@/lib/announcements.functions";
 
-type Tab = "overview" | "users" | "matches" | "catalog" | "logs" | "turns";
+type Tab = "overview" | "users" | "matches" | "rooms" | "ads" | "catalog" | "logs" | "turns";
 
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "overview", label: "نظرة عامة", icon: <BarChart3 className="size-4" /> },
   { id: "users", label: "اللاعبون", icon: <Users className="size-4" /> },
   { id: "matches", label: "المباريات", icon: <ListOrdered className="size-4" /> },
+  { id: "rooms", label: "الغرف", icon: <Users className="size-4" /> },
+  { id: "ads", label: "الإعلانات", icon: <Megaphone className="size-4" /> },
   { id: "catalog", label: "الكتالوج", icon: <Store className="size-4" /> },
   { id: "logs", label: "سجل الأدمن", icon: <ShieldCheck className="size-4" /> },
   { id: "turns", label: "أحداث الأدوار", icon: <Timer className="size-4" /> },
@@ -93,6 +106,8 @@ export function AdminPanel() {
       {tab === "overview" && <Overview />}
       {tab === "users" && <UsersTab />}
       {tab === "matches" && <MatchesTab />}
+      {tab === "rooms" && <RoomsTab />}
+      {tab === "ads" && <AdsTab />}
       {tab === "catalog" && <CatalogTab />}
       {tab === "logs" && <LogsTab />}
       {tab === "turns" && <TurnsTab />}
@@ -541,6 +556,124 @@ function TurnsTab() {
         </div>
       ))}
       {rows.length === 0 && <p className="text-center text-xs text-ludo-soft">لا أحداث مسجّلة</p>}
+    </div>
+  );
+}
+
+
+/** إدارة الغرف: عرض الغرف الحيّة وحذف أي غرفة */
+function RoomsTab() {
+  const [rooms, setRooms] = useState<AdminRoom[]>([]);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const r = await adminListRooms();
+    setRooms(r.rooms);
+  }, []);
+  useEffect(() => { void load(); }, [load]);
+
+  return (
+    <div className="space-y-2">
+      {rooms.map((r) => (
+        <div key={r.id} className="coin-card flex items-center gap-2 text-xs">
+          <span className="min-w-0 flex-1">
+            <b className="block truncate text-ludo-gold">{r.name}</b>
+            <small className="block text-ludo-soft">
+              كود {r.code} · {r.mode === "domino" ? "دومينو" : "لودو"} · {r.members}/{r.max_players} لاعب
+            </small>
+            <small className="block text-[10px] text-ludo-soft">
+              المضيف {r.host_name ?? "—"} · {r.status === "lobby" ? "انتظار" : "جارية"} · {r.is_public ? "عامة" : "خاصة"}
+            </small>
+          </span>
+          <Button
+            variant="ghostGold"
+            size="sm"
+            onClick={async () => {
+              const res = await adminDeleteRoom({ data: { id: r.id } });
+              setMsg(res.ok ? "تم حذف الغرفة" : "مرفوض");
+              if (res.ok) void load();
+            }}
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
+      ))}
+      {rooms.length === 0 && <p className="text-center text-xs text-ludo-soft">لا غرف حاليًا</p>}
+      {msg && <p className="text-center text-xs text-ludo-soft">{msg}</p>}
+    </div>
+  );
+}
+
+/** إدارة الإعلانات: تظهر مباشرة في الواجهة الرئيسية لكل اللاعبين */
+function AdsTab() {
+  const [items, setItems] = useState<Announcement[]>([]);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [link, setLink] = useState("");
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const r = await adminListAnnouncements();
+    setItems(r.items);
+  }, []);
+  useEffect(() => { void load(); }, [load]);
+
+  return (
+    <div className="space-y-3">
+      <div className="coin-card space-y-2">
+        <b className="block text-xs text-ludo-gold">إعلان جديد</b>
+        <Input value={title} maxLength={80} onChange={(e) => setTitle(e.target.value)} placeholder="العنوان" />
+        <Input value={body} maxLength={300} onChange={(e) => setBody(e.target.value)} placeholder="النص" />
+        <Input value={link} maxLength={200} onChange={(e) => setLink(e.target.value)} placeholder="رابط (اختياري)" />
+        <Button
+          variant="play"
+          className="w-full"
+          onClick={async () => {
+            if (!title.trim()) { setMsg("اكتب عنوانًا"); return; }
+            const r = await adminSaveAnnouncement({ data: { title, body, link, kind: "banner", active: true } });
+            setMsg(r.ok ? "تم نشر الإعلان" : "مرفوض");
+            if (r.ok) { setTitle(""); setBody(""); setLink(""); sfx.tap(); void load(); }
+          }}
+        >
+          <Sparkles /> نشر الإعلان
+        </Button>
+      </div>
+
+      {items.map((a) => (
+        <div key={a.id} className="coin-card flex items-start gap-2 text-xs">
+          <span className="min-w-0 flex-1">
+            <b className="block truncate text-ludo-gold">{a.title}</b>
+            <small className="block text-ludo-soft">{a.body}</small>
+            <small className="block text-[10px] text-ludo-soft">{timeAr(a.created_at)}</small>
+          </span>
+          <Button
+            variant={a.active ? "royal" : "ghostGold"}
+            size="sm"
+            onClick={async () => {
+              const r = await adminSaveAnnouncement({
+                data: { id: a.id, title: a.title, body: a.body, link: a.link, kind: a.kind, active: !a.active },
+              });
+              setMsg(r.ok ? "تم التحديث" : "مرفوض");
+              if (r.ok) void load();
+            }}
+          >
+            {a.active ? "ظاهر" : "مخفي"}
+          </Button>
+          <Button
+            variant="ghostGold"
+            size="sm"
+            onClick={async () => {
+              const r = await adminDeleteAnnouncement({ data: { id: a.id } });
+              setMsg(r.ok ? "تم الحذف" : "مرفوض");
+              if (r.ok) void load();
+            }}
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        </div>
+      ))}
+      {items.length === 0 && <p className="text-center text-xs text-ludo-soft">لا إعلانات</p>}
+      {msg && <p className="text-center text-xs text-ludo-soft">{msg}</p>}
     </div>
   );
 }
