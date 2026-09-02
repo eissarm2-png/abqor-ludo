@@ -53,11 +53,11 @@
 
 :root {
   --radius: 0.75rem;
-  --background: #0b2e73;
+  --background: #45103c;
   --foreground: oklch(0.97 0.02 95);
-  --card: #124395;
+  --card: #5c1b52;
   --card-foreground: oklch(0.97 0.02 95);
-  --popover: #0f3a86;
+  --popover: #4a1240;
   --popover-foreground: oklch(0.97 0.02 95);
   --primary: oklch(0.8 0.16 85);
   --primary-foreground: oklch(0.22 0.09 262);
@@ -73,26 +73,26 @@
   --input: oklch(0.38 0.1 262);
   --ring: oklch(0.8 0.16 85);
   /* لوحة ألوان مأخوذة من الصور المرجعية: أرجواني ماجنتا + ذهب + وردي + أخضر */
-  --ludo-deep: #06204f;
-  --ludo-purple: #0f3a86;
-  --ludo-magenta: #1a56b8;
-  --ludo-plum: #0a2b66;
-  --ludo-panel: #124395;
+  --ludo-deep: #25061f;
+  --ludo-purple: #5c1b52;
+  --ludo-magenta: #8b2a76;
+  --ludo-plum: #3a0d31;
+  --ludo-panel: #5c1b52;
   --ludo-gold: #f6c32c;
   --ludo-gold-dark: #b8791b;
   --ludo-pink: #ffd45e;
   --ludo-pink-dark: #c8901a;
   --ludo-green: #7cc242;
   --ludo-green-dark: #4d8a22;
-  --ludo-soft: #cfe0ff;
+  --ludo-soft: #f0d6ea;
   --ludo-ruby: #ea4937;
   --ludo-palm: #22ca57;
   --ludo-amber: #fac61f;
   --ludo-lagoon: #1e90ff;
   --ludo-surface: #f7f2e2;
   --ludo-board: #16509f;
-  --ludo-line: #06204f;
-  --ludo-ink: #06204f;
+  --ludo-line: #25061f;
+  --ludo-ink: #25061f;
   --shadow-token: 0 2px 0 oklch(0.22 0.08 262), 0 0 10px color-mix(in oklab, currentColor 40%, transparent);
   --shadow-board: 0 0 0 3px var(--ludo-gold), 0 0 0 7px var(--ludo-purple), 0 0 26px color-mix(in oklab, var(--ludo-pink) 65%, transparent);
   --gradient-board: linear-gradient(135deg, color-mix(in oklab, var(--ludo-gold) 10%, transparent), transparent 42%);
@@ -110,7 +110,7 @@
   overflow-x: hidden;
   color: var(--foreground);
   background:
-    radial-gradient(120% 60% at 50% 0%, #1c5fc4 0%, #14499f 26%, #0f3a86 52%, #0a2b66 76%, #06204f 100%);
+    radial-gradient(120% 60% at 50% 0%, #7d2c6d 0%, #66205b 26%, #52164a 52%, #3a0d31 76%, #25061f 100%);
 }
 .ludo-shell::before {
   content: "";
