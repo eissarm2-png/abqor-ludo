@@ -53,11 +53,11 @@
 
 :root {
   --radius: 0.75rem;
-  --background: #0b2e73;
+  --background: #45103c;
   --foreground: oklch(0.97 0.02 95);
-  --card: #124395;
+  --card: #5c1b52;
   --card-foreground: oklch(0.97 0.02 95);
-  --popover: #0f3a86;
+  --popover: #4a1240;
   --popover-foreground: oklch(0.97 0.02 95);
   --primary: oklch(0.8 0.16 85);
   --primary-foreground: oklch(0.22 0.09 262);
@@ -73,26 +73,26 @@
   --input: oklch(0.38 0.1 262);
   --ring: oklch(0.8 0.16 85);
   /* لوحة ألوان مأخوذة من الصور المرجعية: أرجواني ماجنتا + ذهب + وردي + أخضر */
-  --ludo-deep: #06204f;
-  --ludo-purple: #0f3a86;
-  --ludo-magenta: #1a56b8;
-  --ludo-plum: #0a2b66;
-  --ludo-panel: #124395;
+  --ludo-deep: #25061f;
+  --ludo-purple: #5c1b52;
+  --ludo-magenta: #8b2a76;
+  --ludo-plum: #3a0d31;
+  --ludo-panel: #5c1b52;
   --ludo-gold: #f6c32c;
   --ludo-gold-dark: #b8791b;
   --ludo-pink: #ffd45e;
   --ludo-pink-dark: #c8901a;
   --ludo-green: #7cc242;
   --ludo-green-dark: #4d8a22;
-  --ludo-soft: #cfe0ff;
+  --ludo-soft: #f0d6ea;
   --ludo-ruby: #ea4937;
   --ludo-palm: #22ca57;
   --ludo-amber: #fac61f;
   --ludo-lagoon: #1e90ff;
   --ludo-surface: #f7f2e2;
-  --ludo-board: #16509f;
-  --ludo-line: #06204f;
-  --ludo-ink: #06204f;
+  --ludo-board: #6b2a7a;
+  --ludo-line: #25061f;
+  --ludo-ink: #25061f;
   --shadow-token: 0 2px 0 oklch(0.22 0.08 262), 0 0 10px color-mix(in oklab, currentColor 40%, transparent);
   --shadow-board: 0 0 0 3px var(--ludo-gold), 0 0 0 7px var(--ludo-purple), 0 0 26px color-mix(in oklab, var(--ludo-pink) 65%, transparent);
   --gradient-board: linear-gradient(135deg, color-mix(in oklab, var(--ludo-gold) 10%, transparent), transparent 42%);
@@ -110,7 +110,7 @@
   overflow-x: hidden;
   color: var(--foreground);
   background:
-    radial-gradient(120% 60% at 50% 0%, #1c5fc4 0%, #14499f 26%, #0f3a86 52%, #0a2b66 76%, #06204f 100%);
+    radial-gradient(120% 60% at 50% 0%, #7d2c6d 0%, #66205b 26%, #52164a 52%, #3a0d31 76%, #25061f 100%);
 }
 .ludo-shell::before {
   content: "";
@@ -503,7 +503,7 @@
   gap: .5rem;
   padding: .3rem .9rem .3rem .4rem;
   border-radius: 999px;
-  background: linear-gradient(180deg, #0d3378, #06204f);
+  background: linear-gradient(180deg, #3f0f37, #25061f);
   border: 1px solid rgb(255 255 255 / .12);
   color: #fff;
   font-weight: 800;
@@ -727,12 +727,12 @@
   position: relative;
   border-radius: 1.1rem;
   padding: .9rem;
-  background: linear-gradient(180deg, #1b5cc0 0%, #124395 42%, #0d3378 100%);
+  background: linear-gradient(180deg, #8b2a76 0%, #5c1b52 42%, #3f0f37 100%);
   border: 1px solid rgb(255 255 255 / .18);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / .28),
     inset 0 -10px 22px rgb(0 0 0 / .35),
-    0 6px 0 #0a2b66,
+    0 6px 0 #3a0d31,
     0 12px 22px rgb(0 0 0 / .45);
 }
 .glossy-card::after {
@@ -763,7 +763,7 @@
 .mode-tile b { color: #fff; font-size: .95rem; text-shadow: 0 2px 0 rgb(0 0 0 / .4); }
 .mode-tile small { color: rgb(255 255 255 / .78); font-size: .68rem; }
 .tile-gold { --tile-a: #f7b93d; --tile-b: #e0902a; --tile-c: #a9611a; }
-.tile-violet { --tile-a: #3b7ff0; --tile-b: #1d55c4; --tile-c: #12398a; }
+.tile-violet { --tile-a: #a05bd6; --tile-b: #7b34b4; --tile-c: #4d1a78; }
 .tile-pink { --tile-a: #ef4a48; --tile-b: #cf2222; --tile-c: #8d1414; }
 .tile-green { --tile-a: #8fd257; --tile-b: #66ab31; --tile-c: #3f7318; }
 
@@ -803,7 +803,7 @@
   border-radius: 999px;
   object-fit: cover;
   display: grid; place-items: center;
-  background: #06204f;
+  background: #25061f;
   font-size: 1.35rem;
 }
 .level-chip {
@@ -918,7 +918,7 @@
   place-items: center;
   background:
     radial-gradient(circle at 50% 40%, oklch(0.45 0.16 262 / 0.9), transparent 60%),
-    linear-gradient(180deg, #0f3a86, #06204f 60%, #04173a);
+    linear-gradient(180deg, #5c1b52, #25061f 60%, #1c0417);
 }
 .splash-halo {
   position: absolute;

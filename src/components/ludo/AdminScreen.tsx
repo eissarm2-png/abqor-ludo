@@ -588,6 +588,7 @@ function RoomsTab() {
           <Button
             variant="ghostGold"
             size="sm"
+            aria-label="حذف الغرفة"
             onClick={async () => {
               const res = await adminDeleteRoom({ data: { id: r.id } });
               setMsg(res.ok ? "تم حذف الغرفة" : "مرفوض");

@@ -640,12 +640,14 @@ function LudoShell() {
     <div className="ludo-shell min-h-screen" dir="rtl">
       <Starfield />
       <div className="relative mx-auto min-h-screen w-full max-w-md px-3 pb-24 pt-3 sm:pt-5">
+        {screen !== "home" && (
         <TopBar
           muted={muted}
           onMute={() => toggleMute()}
           onMenu={() => navigate("home")}
           onAccount={() => navigate("account")}
         />
+        )}
         {screen === "home" && <AnnouncementBar />}
         {screen === "home" && (
           <HomeScreen
@@ -864,127 +866,235 @@ function HomeScreen({
   dominoPlay: () => void;
   isAdmin?: boolean;
 }) {
-  return (
-    <main className="mt-3 space-y-4 pb-24">
-      <h2 className="ribbon-title reflect-gloss">اختر نمط اللعب</h2>
+  const { profile } = useAuth();
+  const level = profile?.level ?? 1;
+  const xp = profile?.xp ?? 0;
+  const gold = profile?.gold ?? 0;
+  const diamonds = profile?.diamonds ?? 0;
 
-      <div className="grid grid-cols-2 gap-3">
-        <ModeCard
-          tone="green"
-          img={mode2p}
-          title="لعب سريع"
-          subtitle="ضد الروبوت"
-          onClick={quickPlay}
-        />
-        <ModeCard
-          tone="gold"
-          img={mode4p}
-          title="لعب محلي"
-          subtitle="2 – 4 لاعبين"
-          onClick={() => navigate("setup")}
-        />
-        <ModeCard
-          tone="violet"
-          img={modeDomino}
-          title="دومينو"
-          subtitle="حجارة ثلاثية الأبعاد"
-          onClick={dominoPlay}
-        />
-        <ModeCard
-          tone="pink"
-          img={navTrophy}
-          title="المتصدرون"
-          subtitle="ترتيب اللاعبين"
-          onClick={() => navigate("leaderboard")}
-        />
+  return (
+    <main className="relative -mt-1 space-y-4 pb-28">
+      {/* الشريط العلوي: الحساب والعملات والإعدادات */}
+      <header className="flex items-start gap-2">
+        <button
+          type="button"
+          onClick={() => navigate("account")}
+          className="press-3d relative shrink-0"
+          aria-label="حسابي"
+        >
+          <img
+            src={avatarTiger}
+            alt=""
+            width={512}
+            height={512}
+            className="size-[3.6rem] rounded-full border-[3px] border-ludo-gold bg-ludo-plum object-cover shadow-[0_4px_0_#3a0d31,0_0_14px_rgb(255_212_94/.35)]"
+          />
+          <span className="absolute -bottom-2 -start-1 flex items-center gap-1 rounded-full border border-ludo-gold/80 bg-ludo-plum px-1.5 py-px text-[10px] font-black text-ludo-gold">
+            ⭐ {level} / {Math.max(50, level * 50)}
+          </span>
+        </button>
+
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
+          <StatPill
+            icon={<Coins className="size-4 text-ludo-gold" />}
+            value={gold.toLocaleString("en-US")}
+            onClick={() => navigate("chests")}
+          />
+          <StatPill
+            icon={<Gem className="size-4 text-ludo-palm" />}
+            value={String(diamonds)}
+            onClick={() => navigate("chests")}
+          />
+          <StatPill
+            icon={<Sparkles className="size-4 text-ludo-pink" />}
+            value={`${xp} XP`}
+            onClick={() => navigate("missions")}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={() => navigate("settings")}
+          aria-label="الإعدادات"
+          className="press-3d grid size-10 shrink-0 place-items-center rounded-full border border-ludo-gold/60 bg-ludo-plum text-ludo-gold shadow-[0_3px_0_#3a0d31]"
+        >
+          <Settings className="size-5" />
+        </button>
+      </header>
+
+      {/* أزرار جانبية: المهام والسجل */}
+      <div className="flex items-start gap-3">
+        <div className="flex flex-col gap-2">
+          <SideButton
+            img={modeMissions}
+            label="المهام"
+            badge="6"
+            onClick={() => navigate("missions")}
+          />
+          <SideButton img={diceRoyal} label="السجل" onClick={() => navigate("history")} />
+        </div>
+
+        {/* لافتة العرض */}
+        <button
+          type="button"
+          onClick={() => navigate("chests")}
+          className="press-3d relative flex flex-1 items-center gap-2 overflow-hidden rounded-2xl border-2 border-ludo-gold bg-[linear-gradient(180deg,#3a0d31,#25061f)] p-2 text-right shadow-[0_5px_0_#25061f,0_10px_20px_rgb(0_0_0/.45)]"
+        >
+          <span className="absolute -start-1 top-1 rotate-[-14deg] rounded-md bg-ludo-ruby px-2 py-px text-[10px] font-black text-white shadow">
+            صفقة حاسمة
+          </span>
+          <img src={coinStack} alt="" width={512} height={512} className="asset-shine size-16" />
+          <span className="min-w-0 flex-1">
+            <b className="block text-base text-ludo-gold">تعزيز الذهب!</b>
+            <small className="block text-[11px] text-ludo-soft">30K ذهب فوري</small>
+          </span>
+          <span className="rounded-lg border border-white/25 bg-ludo-green px-2 py-1 text-xs font-black text-white shadow-[0_3px_0_#4d8a22]">
+            افتح الآن
+          </span>
+        </button>
       </div>
 
-      <section className="glossy-card">
-        <div className="relative grid grid-cols-4 gap-2">
-          <SmallTile img={modeMissions} label="المهام" onClick={() => navigate("missions")} />
-          <SmallTile img={chestClosed} label="الصناديق" onClick={() => navigate("chests")} />
-          <SmallTile img={modeRules} label="القواعد" onClick={() => navigate("rules")} />
-          <SmallTile img={navFriends} label="الغرف" onClick={() => navigate("rooms")} />
-          <SmallTile img={navTrophy} label="البطولات" onClick={() => navigate("tournaments")} />
-          <SmallTile img={diceRoyal} label="السجل" onClick={() => navigate("history")} />
-          <SmallTile img={modeLedger} label="المعاملات" onClick={() => navigate("ledger")} />
-          <SmallTile img={chestOpen} label="صناديقي" onClick={() => navigate("opened")} />
-          <SmallTile img={avatarTiger} label="حسابي" onClick={() => navigate("account")} />
-          <SmallTile img={navSettings} label="الإعدادات" onClick={() => navigate("settings")} />
-        </div>
-      </section>
+      {/* العلامة المائية */}
+      <h2 className="select-none py-2 text-center font-display text-4xl font-black text-white/10">
+        عبقور اللودو
+      </h2>
+
+      {/* أوضاع اللعب الأساسية */}
+      <div className="grid grid-cols-2 gap-3">
+        <BigModeCard tone="gold" img={mode2p} title="2 لاعبان" onClick={quickPlay} />
+        <BigModeCard tone="violet" img={mode4p} title="4 لاعبين" onClick={() => navigate("setup")} />
+      </div>
+
+      {/* أوضاع إضافية */}
+      <div className="grid grid-cols-3 gap-2">
+        <MiniModeCard
+          img={modeDomino}
+          title="الوضع الخاص"
+          icon={<Crown className="size-4" />}
+          onClick={dominoPlay}
+        />
+        <MiniModeCard
+          img={navFriends}
+          title="تكوين فريق عبر الإنترنت"
+          icon={<Users className="size-4" />}
+          onClick={() => navigate("rooms")}
+        />
+        <MiniModeCard
+          img={navTrophy}
+          title="فريق من الأصدقاء"
+          icon={<MessageSquare className="size-4" />}
+          onClick={() => navigate("rooms")}
+        />
+      </div>
 
       {isAdmin && (
         <Button variant="royal" size="xl" className="w-full" onClick={() => navigate("admin")}>
           <ShieldCheck /> لوحة تحكم المشرف
         </Button>
       )}
-
-      <button
-        className="glossy-card press-3d reflect-gloss flex w-full items-center gap-3 text-right"
-        type="button"
-        onClick={() => navigate("chests")}
-      >
-        <img
-          src={giftBox}
-          alt=""
-          width={512}
-          height={512}
-          loading="lazy"
-          className="asset-shine relative size-16 shrink-0"
-        />
-        <span className="relative min-w-0 flex-1">
-          <b className="block text-lg text-ludo-gold">هدية اليوم جاهزة!</b>
-          <small className="text-ludo-soft">افتح الصندوق واجمع الذهب والجواهر</small>
-        </span>
-        <ChevronLeft className="relative size-6 shrink-0 text-ludo-gold" />
-      </button>
     </main>
   );
 }
 
-function ModeCard({
-  tone,
-  img,
-  title,
-  subtitle,
+function StatPill({
+  icon,
+  value,
   onClick,
 }: {
-  tone: string;
-  img: string;
-  title: string;
-  subtitle: string;
+  icon: React.ReactNode;
+  value: string;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={cn("mode-tile press-3d reflect-gloss", `tile-${tone}`)}
+      className="press-3d flex items-center gap-1 rounded-full border border-ludo-gold/60 bg-ludo-plum px-2 py-1 text-xs font-black text-ludo-soft shadow-[0_3px_0_#25061f]"
     >
-      <img src={img} alt="" width={512} height={512} loading="lazy" />
-      <b>{title}</b>
-      <small>{subtitle}</small>
+      {icon}
+      <span className="tabular-nums">{value}</span>
+      <span className="grid size-4 place-items-center rounded-full bg-ludo-green text-[10px] text-white">
+        <Plus className="size-3" />
+      </span>
     </button>
   );
 }
 
-function SmallTile({ img, label, onClick }: { img: string; label: string; onClick: () => void }) {
+function SideButton({
+  img,
+  label,
+  badge,
+  onClick,
+}: {
+  img: string;
+  label: string;
+  badge?: string;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="press-3d reflect-gloss relative grid place-items-center gap-1 rounded-xl border border-ludo-gold/25 bg-black/30 p-2 shadow-[inset_0_1px_0_rgb(255_255_255/.18),0_4px_0_#0a2b66,0_8px_16px_rgb(0_0_0/.45)]"
+      aria-label={label}
+      className="press-3d relative grid size-14 place-items-center rounded-xl border-2 border-ludo-gold/80 bg-[linear-gradient(180deg,#5c1b52,#3a0d31)] shadow-[0_4px_0_#25061f]"
     >
-      <img
-        src={img}
-        alt=""
-        width={512}
-        height={512}
-        loading="lazy"
-        className="asset-shine size-10"
-      />
-      <small className="text-[10px] font-bold text-ludo-soft">{label}</small>
+      <img src={img} alt="" width={512} height={512} className="asset-shine size-9" />
+      {badge && (
+        <span className="absolute -end-1 -top-1 grid size-5 place-items-center rounded-full bg-ludo-ruby text-[10px] font-black text-white">
+          {badge}
+        </span>
+      )}
+    </button>
+  );
+}
+
+function BigModeCard({
+  tone,
+  img,
+  title,
+  onClick,
+}: {
+  tone: string;
+  img: string;
+  title: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn("mode-tile press-3d reflect-gloss min-h-[9.5rem]", `tile-${tone}`)}
+    >
+      <img src={img} alt="" width={512} height={512} loading="lazy" />
+      <b className="text-lg">{title}</b>
+    </button>
+  );
+}
+
+function MiniModeCard({
+  img,
+  title,
+  icon,
+  onClick,
+}: {
+  img: string;
+  title: string;
+  icon: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="press-3d reflect-gloss relative grid place-items-center gap-1 rounded-2xl border-2 border-ludo-gold/40 bg-[linear-gradient(180deg,#6b2160,#3a0d31)] p-2 shadow-[0_5px_0_#25061f,0_10px_18px_rgb(0_0_0/.4)]"
+    >
+      <span className="absolute -top-2 grid size-6 place-items-center rounded-full border border-ludo-gold/70 bg-ludo-plum text-ludo-gold">
+        {icon}
+      </span>
+      <img src={img} alt="" width={512} height={512} loading="lazy" className="asset-shine size-12" />
+      <small className="text-center text-[10px] font-bold leading-tight text-ludo-soft">
+        {title}
+      </small>
     </button>
   );
 }
@@ -1151,14 +1261,14 @@ function SettingBlock({ title, children }: { title: string; children: React.Reac
 
 function BottomNav({ active, navigate }: { active: Screen; navigate: (s: Screen) => void }) {
   const links: [Screen, string, string][] = [
-    ["home", navHome, "الرئيسية"],
-    ["leaderboard", navTrophy, "المتصدرون"],
     ["chests", navStore, "المتجر"],
-    ["account", navFriends, "حسابي"],
-    ["settings", navSettings, "الإعدادات"],
+    ["rooms", navFriends, "الأصدقاء"],
+    ["home", navHome, "الصفحة الرئيسية"],
+    ["leaderboard", navTrophy, "الأندية"],
+    ["opened", chestOpen, "جوائز"],
   ];
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid w-full max-w-md grid-cols-5 gap-1 border-t-2 border-ludo-gold/70 bg-[linear-gradient(180deg,#0f3a86,#06204f)] px-2 pb-[max(.45rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(0_0_0/.55)]">
+    <nav className="fixed inset-x-0 bottom-0 z-30 mx-auto grid w-full max-w-md grid-cols-5 gap-1 border-t-2 border-ludo-gold/70 bg-[linear-gradient(180deg,#5c1b52,#2c0824)] px-2 pb-[max(.45rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_24px_rgb(0_0_0/.55)]">
       {links.map(([id, icon, label]) => (
         <button
           type="button"
