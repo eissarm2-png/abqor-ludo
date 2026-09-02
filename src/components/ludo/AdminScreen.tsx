@@ -122,7 +122,7 @@ function Overview() {
   useEffect(() => {
     void adminStats().then((r) => {
       if (r.ok && r.stats) setStats(r.stats);
-      else { setError(true); console.error("stats", r.reason); }
+      else setError(true);
     }).catch(() => setError(true));
   }, []);
 
