@@ -49,7 +49,7 @@ export const adminSaveAnnouncement = createServerFn({ method: "POST" })
     };
   })
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.rpc("admin_save_announcement", {
+    const args = {
       _id: data.id,
       _title: data.title,
       _body: data.body,
@@ -57,7 +57,8 @@ export const adminSaveAnnouncement = createServerFn({ method: "POST" })
       _link: data.link,
       _active: data.active,
       _expires_at: data.expiresAt,
-    });
+    } as unknown as { _title: string };
+    const { error } = await context.supabase.rpc("admin_save_announcement", args);
     return error ? { ok: false as const, reason: "forbidden" } : { ok: true as const, reason: "ok" };
   });
 
