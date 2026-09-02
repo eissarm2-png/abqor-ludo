@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      announcements: {
+        Row: {
+          active: boolean
+          body: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          kind: string
+          link: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          link?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          kind?: string
+          link?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chest_defs: {
         Row: {
           active: boolean
@@ -556,9 +595,32 @@ export type Database = {
           xp: number
         }[]
       }
+      admin_delete_announcement: { Args: { _id: string }; Returns: undefined }
+      admin_delete_room: { Args: { _room: string }; Returns: undefined }
       admin_grant_item: {
         Args: { _code: string; _kind: string; _rarity?: string; _uid: string }
         Returns: undefined
+      }
+      admin_list_announcements: {
+        Args: never
+        Returns: {
+          active: boolean
+          body: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          kind: string
+          link: string
+          title: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "announcements"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       admin_list_users: {
         Args: { _limit?: number; _offset?: number; _search?: string }
@@ -605,6 +667,33 @@ export type Database = {
           points: number
           result: string
         }[]
+      }
+      admin_rooms_list: {
+        Args: { _limit?: number }
+        Returns: {
+          code: string
+          created_at: string
+          host_name: string
+          id: string
+          is_public: boolean
+          max_players: number
+          members: number
+          mode: string
+          name: string
+          status: string
+        }[]
+      }
+      admin_save_announcement: {
+        Args: {
+          _active: boolean
+          _body: string
+          _expires_at: string
+          _id: string
+          _kind: string
+          _link: string
+          _title: string
+        }
+        Returns: string
       }
       admin_set_ban: {
         Args: { _banned: boolean; _reason?: string; _uid: string }
