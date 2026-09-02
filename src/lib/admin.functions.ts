@@ -76,14 +76,14 @@ export const syncAdminRole = createServerFn({ method: "POST" })
   });
 
 /** هل الحساب الحالي أدمن؟ التحقق يجري في قاعدة البيانات */
-export const checkAdmin = createServerFn({ method: "GET" })
+export const checkAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data } = await context.supabase.rpc("is_admin");
     return { isAdmin: Boolean(data) };
   });
 
-export const adminStats = createServerFn({ method: "GET" })
+export const adminStats = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase.rpc("admin_stats");
@@ -231,7 +231,7 @@ export const adminTurnEvents = createServerFn({ method: "POST" })
   });
 
 /** كتالوجات اللعبة (صناديق/مهام/متجر) للوحة الأدمن */
-export const adminCatalog = createServerFn({ method: "GET" })
+export const adminCatalog = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const [chests, missions, store] = await Promise.all([
