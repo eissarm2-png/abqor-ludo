@@ -90,7 +90,7 @@
   --ludo-amber: #fac61f;
   --ludo-lagoon: #1e90ff;
   --ludo-surface: #f7f2e2;
-  --ludo-board: #16509f;
+  --ludo-board: #6b2a7a;
   --ludo-line: #25061f;
   --ludo-ink: #25061f;
   --shadow-token: 0 2px 0 oklch(0.22 0.08 262), 0 0 10px color-mix(in oklab, currentColor 40%, transparent);
@@ -503,7 +503,7 @@
   gap: .5rem;
   padding: .3rem .9rem .3rem .4rem;
   border-radius: 999px;
-  background: linear-gradient(180deg, #0d3378, #06204f);
+  background: linear-gradient(180deg, #3f0f37, #25061f);
   border: 1px solid rgb(255 255 255 / .12);
   color: #fff;
   font-weight: 800;
@@ -727,12 +727,12 @@
   position: relative;
   border-radius: 1.1rem;
   padding: .9rem;
-  background: linear-gradient(180deg, #1b5cc0 0%, #124395 42%, #0d3378 100%);
+  background: linear-gradient(180deg, #8b2a76 0%, #5c1b52 42%, #3f0f37 100%);
   border: 1px solid rgb(255 255 255 / .18);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / .28),
     inset 0 -10px 22px rgb(0 0 0 / .35),
-    0 6px 0 #0a2b66,
+    0 6px 0 #3a0d31,
     0 12px 22px rgb(0 0 0 / .45);
 }
 .glossy-card::after {
@@ -803,7 +803,7 @@
   border-radius: 999px;
   object-fit: cover;
   display: grid; place-items: center;
-  background: #06204f;
+  background: #25061f;
   font-size: 1.35rem;
 }
 .level-chip {
@@ -918,7 +918,7 @@
   place-items: center;
   background:
     radial-gradient(circle at 50% 40%, oklch(0.45 0.16 262 / 0.9), transparent 60%),
-    linear-gradient(180deg, #0f3a86, #06204f 60%, #04173a);
+    linear-gradient(180deg, #5c1b52, #25061f 60%, #1c0417);
 }
 .splash-halo {
   position: absolute;
