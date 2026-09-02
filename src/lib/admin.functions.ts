@@ -87,7 +87,7 @@ export const adminStats = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase.rpc("admin_stats");
-    if (error) return { ok: false as const, reason: "forbidden", stats: null };
+    if (error) return { ok: false as const, reason: error.message, stats: null };
     const stats = (Array.isArray(data) ? data[0] : data) as AdminStats | undefined;
     return { ok: true as const, reason: "ok", stats: stats ?? null };
   });
