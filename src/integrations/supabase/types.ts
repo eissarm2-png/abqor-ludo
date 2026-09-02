@@ -251,6 +251,127 @@ export type Database = {
         }
         Relationships: []
       }
+      room_members: {
+        Row: {
+          avatar: string
+          display_name: string
+          id: string
+          joined_at: string
+          ready: boolean
+          room_id: string
+          seat: number
+          user_id: string
+        }
+        Insert: {
+          avatar?: string
+          display_name?: string
+          id?: string
+          joined_at?: string
+          ready?: boolean
+          room_id: string
+          seat?: number
+          user_id: string
+        }
+        Update: {
+          avatar?: string
+          display_name?: string
+          id?: string
+          joined_at?: string
+          ready?: boolean
+          room_id?: string
+          seat?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_members_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_messages: {
+        Row: {
+          body: string
+          created_at: string
+          display_name: string
+          id: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          code: string
+          created_at: string
+          host_id: string
+          id: string
+          is_public: boolean
+          match_id: string | null
+          max_players: number
+          mode: string
+          name: string
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          host_id: string
+          id?: string
+          is_public?: boolean
+          match_id?: string | null
+          max_players?: number
+          mode?: string
+          name: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          host_id?: string
+          id?: string
+          is_public?: boolean
+          match_id?: string | null
+          max_players?: number
+          mode?: string
+          name?: string
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       store_items: {
         Row: {
           active: boolean
@@ -596,6 +717,14 @@ export type Database = {
           xp: number
         }[]
       }
+      create_room: {
+        Args: { _max: number; _mode: string; _name: string; _public: boolean }
+        Returns: {
+          code: string
+          room_id: string
+        }[]
+      }
+      gen_room_code: { Args: never; Returns: string }
       get_chests: {
         Args: never
         Returns: {
@@ -647,12 +776,48 @@ export type Database = {
         }
         Returns: boolean
       }
+      host_update_room: {
+        Args: { _max: number; _mode: string; _public: boolean; _room: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
+      is_room_host: { Args: { _room: string; _uid: string }; Returns: boolean }
+      is_room_member: {
+        Args: { _room: string; _uid: string }
+        Returns: boolean
+      }
+      join_room: {
+        Args: { _code: string }
+        Returns: {
+          ok: boolean
+          reason: string
+          room_id: string
+        }[]
+      }
+      leave_room: { Args: { _room: string }; Returns: undefined }
+      list_public_rooms: {
+        Args: never
+        Returns: {
+          code: string
+          host_name: string
+          id: string
+          max_players: number
+          members: number
+          mode: string
+          name: string
+        }[]
+      }
       log_admin: {
         Args: { _action: string; _detail: Json; _target: string }
         Returns: undefined
       }
       mission_period_start: { Args: { _period: string }; Returns: string }
+      my_active_room: {
+        Args: never
+        Returns: {
+          room_id: string
+        }[]
+      }
       open_chest: {
         Args: { _code: string }
         Returns: {
@@ -697,6 +862,19 @@ export type Database = {
         Returns: undefined
       }
       require_admin: { Args: never; Returns: string }
+      reset_room: { Args: { _room: string }; Returns: undefined }
+      set_room_ready: {
+        Args: { _ready: boolean; _room: string }
+        Returns: undefined
+      }
+      start_room_match: {
+        Args: { _room: string }
+        Returns: {
+          match_id: string
+          ok: boolean
+          reason: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
