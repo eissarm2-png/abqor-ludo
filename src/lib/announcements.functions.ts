@@ -57,7 +57,7 @@ export const adminSaveAnnouncement = createServerFn({ method: "POST" })
       _link: data.link,
       _active: data.active,
       _expires_at: data.expiresAt,
-    } as unknown as { _title: string };
+    } as unknown as Parameters<typeof context.supabase.rpc<"admin_save_announcement">>[1];
     const { error } = await context.supabase.rpc("admin_save_announcement", args);
     return error ? { ok: false as const, reason: "forbidden" } : { ok: true as const, reason: "ok" };
   });
