@@ -78,6 +78,8 @@ import {
 import { applyAnimations, loadAnimations, setAnimations as persistAnimations } from "@/lib/prefs";
 import { useServerFn } from "@tanstack/react-start";
 import { submitMatchResult } from "@/lib/match.functions";
+import { AnnouncementBar } from "./AnnouncementBar";
+import { enqueueResult, flushQueue, isOnline, onReconnect } from "@/lib/offline-queue";
 import { forfeitServerTurn, rollServerDie, startServerTurn } from "@/lib/live.functions";
 import { TurnTimer } from "./TurnTimer";
 import { MatchChat, type ChatContext } from "./MatchChat";
@@ -163,6 +165,18 @@ function LudoShell() {
   const turnSig = useRef<string | null>(null);
   const rollingRef = useRef(false);
   const sendResult = useServerFn(submitMatchResult);
+
+  // تفريغ طابور النتائج المؤجّلة عند تسجيل الدخول أو عودة الاتصال
+  useEffect(() => {
+    if (!user) return;
+    const flush = () => {
+      void flushQueue((data) => sendResult({ data })).then((n) => {
+        if (n > 0) void refreshProfile();
+      });
+    };
+    flush();
+    return onReconnect(flush);
+  }, [user, sendResult, refreshProfile]);
   const sendRoll = useServerFn(rollServerDie);
   const openTurn = useServerFn(startServerTurn);
   const endTurn = useServerFn(forfeitServerTurn);
@@ -282,19 +296,25 @@ function LudoShell() {
       const key = `${matchId.current}-${payload.result}-${payload.mode}`;
       if (!user || !matchId.current || savedFor.current === key) return;
       savedFor.current = key;
-      void sendResult({
-        data: {
-          matchId: matchId.current,
-          result: payload.result,
-          players: payload.players,
-          moves: payload.moves,
-          durationMs: Math.max(0, Date.now() - matchStart.current),
-          mode: payload.mode,
-        },
-      })
+      const entry = {
+        matchId: matchId.current,
+        result: payload.result,
+        players: payload.players,
+        moves: payload.moves,
+        durationMs: Math.max(0, Date.now() - matchStart.current),
+        mode: payload.mode,
+      };
+
+      // بدون اتصال: تُحفظ النتيجة والنقاط محليًا وتُرسل تلقائيًا عند عودة الشبكة
+      if (!isOnline()) {
+        enqueueResult(entry);
+        return;
+      }
+
+      void sendResult({ data: entry })
         .then(() => refreshProfile())
         .catch(() => {
-          savedFor.current = null;
+          enqueueResult(entry);
         });
     },
     [user, sendResult, refreshProfile],
@@ -626,6 +646,7 @@ function LudoShell() {
           onMenu={() => navigate("home")}
           onAccount={() => navigate("account")}
         />
+        {screen === "home" && <AnnouncementBar />}
         {screen === "home" && (
           <HomeScreen
             navigate={navigate}
