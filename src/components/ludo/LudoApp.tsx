@@ -969,7 +969,7 @@ function HomeScreen({
         {/* فريق من الأصدقاء */}
         <HotSpot label="فريق من الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "70%", top: "70.8%", width: "29%", height: "11.5%" }} />
         {/* الشريط السفلي */}
-        <HotSpot label="المتجر" onClick={() => navigate("chests")} style={{ left: "0%", top: "86.5%", width: "19%", height: "12%" }} />
+        <HotSpot label="المتجر" onClick={() => navigate("store")} style={{ left: "0%", top: "86.5%", width: "19%", height: "12%" }} />
         <HotSpot label="الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "19%", top: "86.5%", width: "20%", height: "12%" }} />
         <HotSpot label="الصفحة الرئيسية" onClick={() => navigate("home")} style={{ left: "39%", top: "84.5%", width: "23%", height: "14%" }} />
         <HotSpot label="الأندية" onClick={() => navigate("leaderboard")} style={{ left: "62%", top: "86.5%", width: "19%", height: "12%" }} />
