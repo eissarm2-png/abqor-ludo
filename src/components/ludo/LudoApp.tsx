@@ -87,6 +87,11 @@ import { AchievementsScreen } from "./AchievementsScreen";
 import { DiceSkinScreen } from "./DiceSkinScreen";
 import { SeasonScreen } from "./SeasonScreen";
 import { SupportScreen } from "./SupportScreen";
+import { InvitesScreen } from "./InvitesScreen";
+import { ProfileScreen } from "./ProfileScreen";
+import { WalletScreen } from "./WalletScreen";
+import { SecurityScreen } from "./SecurityScreen";
+import { ReconnectOverlay } from "./ReconnectOverlay";
 import { NotificationsScreen } from "./NotificationsScreen";
 import { useServerFn } from "@tanstack/react-start";
 import { submitMatchResult } from "@/lib/match.functions";
@@ -134,6 +139,10 @@ type Screen =
   | "dice"
   | "season"
   | "support"
+  | "invites"
+  | "profile"
+  | "wallet"
+  | "security"
   | "notifications"
   | "domino"
   | "admin"
@@ -702,7 +711,7 @@ function LudoShell() {
         )}
         {screen === "rooms" && (
           <PanelPage title="غرف اللعب" icon={<Users />} onBack={() => navigate("home")}>
-            <RoomsPanel meId={user?.id ?? null} onLaunch={launchRoomMatch} />
+            <RoomsPanel meId={user?.id ?? null} onLaunch={launchRoomMatch} initialCode={inviteCode} />
           </PanelPage>
         )}
         {screen === "rewards" && <RewardsScreen onBack={() => navigate("home")} />}
@@ -745,6 +754,18 @@ function LudoShell() {
               </Button>
               <Button variant="royal" className="w-full" onClick={() => navigate("notifications")}>
                 <Bell className="size-4" /> الإشعارات
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("profile")}>
+                <UserCircle2 className="size-4" /> الملف الشخصي
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("invites")}>
+                <Bell className="size-4" /> دعوات اللعب
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("wallet")}>
+                <Gift className="size-4" /> المحفظة والاقتصاد
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("security")}>
+                <ShieldCheck className="size-4" /> الحماية والأمان
               </Button>
             </div>
           </PanelPage>
@@ -813,6 +834,31 @@ function LudoShell() {
             <AdminPanel />
           </PanelPage>
         )}
+        {screen === "profile" && (
+          <PanelPage title="الملف الشخصي" icon={<UserCircle2 />} onBack={() => navigate("home")}>
+            <ProfileScreen onHistory={() => navigate("history")} />
+          </PanelPage>
+        )}
+        {screen === "invites" && (
+          <PanelPage title="دعوات اللعب" icon={<Bell />} onBack={() => navigate("home")}>
+            <InvitesScreen
+              onJoin={(code) => {
+                setInviteCode(code);
+                navigate("rooms");
+              }}
+            />
+          </PanelPage>
+        )}
+        {screen === "wallet" && (
+          <PanelPage title="نظام الاقتصاد" icon={<Gift />} onBack={() => navigate("home")}>
+            <WalletScreen onStore={() => navigate("store")} />
+          </PanelPage>
+        )}
+        {screen === "security" && (
+          <PanelPage title="الحماية والأمان" icon={<ShieldCheck />} onBack={() => navigate("home")}>
+            <SecurityScreen />
+          </PanelPage>
+        )}
         {screen === "account" && (
           <PanelPage title="حسابي" icon={<UserCircle2 />} onBack={() => navigate("home")}>
             <AuthPanel />
@@ -821,6 +867,7 @@ function LudoShell() {
         {screen !== "home" && <BottomNav active={screen} navigate={navigate} />}
       </div>
       {celebrate && <Confetti />}
+      <ReconnectOverlay />
     </div>
   );
 }
