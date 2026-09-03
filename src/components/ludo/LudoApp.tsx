@@ -896,7 +896,7 @@ function HotSpot({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="absolute rounded-2xl outline-none transition active:scale-[.96] focus-visible:ring-2 focus-visible:ring-white/70"
+      className="hotspot absolute rounded-2xl outline-none transition active:scale-[.96] focus-visible:ring-2 focus-visible:ring-white/70"
       style={{ ...style, position: "absolute" }}
     />
   );

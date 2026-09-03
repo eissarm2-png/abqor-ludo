@@ -25,7 +25,7 @@ export function LudoBoard({ state, moves, onTokenClick }: Props) {
   const placements = new Map(tokenPlacements(state).map((p) => [p.id, p]));
 
   return (
-    <div className="relative aspect-square w-full select-none">
+    <div data-board className="relative aspect-square w-full select-none">
       <BoardCanvas />
 
       {/* أهداف الحركة */}
