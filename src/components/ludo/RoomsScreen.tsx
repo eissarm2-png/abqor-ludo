@@ -183,13 +183,15 @@ export function RoomsPanel({
     if (launched.current === room.match_id) return;
     if (members.length < 2) return;
     launched.current = room.match_id;
+    const seatIndex = Math.max(0, members.findIndex((m) => m.user_id === meId));
     onLaunch({
       roomId: room.id,
       matchId: room.match_id,
       mode: room.mode === "domino" ? "domino" : "ludo",
       names: members.map((m) => m.display_name),
+      seatIndex,
     });
-  }, [room, members, onLaunch]);
+  }, [room, members, meId, onLaunch]);
 
   const guard = async (fn: () => Promise<void>) => {
     setBusy(true);
