@@ -302,6 +302,24 @@ function LudoShell() {
     showCelebration(1600);
   };
 
+  /** لعب فردي فوري: يبدأ تلقائيًا بدون غرفة ولا انتظار، أنا + روبوتات */
+  const startSolo = useCallback(() => {
+    initAudio();
+    setInRoom(false);
+    setHumanCount(1);
+    setGame(createGame(gameplay.players, 1));
+    savedFor.current = null;
+    matchId.current = crypto.randomUUID();
+    matchStart.current = Date.now();
+    moveCount.current = 0;
+    setEvents([]);
+    sfx.start();
+    setScreen("game");
+    showCelebration(1600);
+    toast.success("بدأ اللعب الفردي — كل رمية نرد تخصم من محفظتك والفوز يضيف مكافأة");
+  }, [gameplay.players, showCelebration]);
+
+
   const startDomino = () => {
     initAudio();
     setInRoom(false);
