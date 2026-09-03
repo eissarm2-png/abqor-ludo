@@ -373,6 +373,32 @@ function LudoShell() {
     [showCelebration],
   );
 
+  /** الخروج النهائي من المباراة: يغادر الغرفة فعليًا ولا يُعيدني إليها تلقائيًا */
+  const exitMatch = useCallback(() => {
+    const id = matchId.current;
+    if (inRoom) {
+      try {
+        const raw = localStorage.getItem("abqor:left-matches");
+        const list: string[] = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("abqor:left-matches", JSON.stringify([...list.slice(-19), id]));
+      } catch {
+        /* التخزين المحلي قد يكون معطّلًا */
+      }
+      void (async () => {
+        const { data } = await supabase.rpc("my_active_room");
+        const active = (data ?? [])[0] as { room_id: string } | undefined;
+        if (active?.room_id) await supabase.rpc("leave_room", { _room: active.room_id });
+      })();
+    }
+    setInRoom(false);
+    setSeatIndex(0);
+    setDeadline(null);
+    setRolling(false);
+    rollingRef.current = false;
+    navigate("home");
+  }, [inRoom, navigate]);
+
+
   const reportMatch = useCallback(
     (payload: {
       result: "win" | "loss";
