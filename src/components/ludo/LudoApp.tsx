@@ -373,6 +373,32 @@ function LudoShell() {
     [showCelebration],
   );
 
+  /** الخروج النهائي من المباراة: يغادر الغرفة فعليًا ولا يُعيدني إليها تلقائيًا */
+  const exitMatch = useCallback(() => {
+    const id = matchId.current;
+    if (inRoom) {
+      try {
+        const raw = localStorage.getItem("abqor:left-matches");
+        const list: string[] = raw ? JSON.parse(raw) : [];
+        localStorage.setItem("abqor:left-matches", JSON.stringify([...list.slice(-19), id]));
+      } catch {
+        /* التخزين المحلي قد يكون معطّلًا */
+      }
+      void (async () => {
+        const { data } = await supabase.rpc("my_active_room");
+        const active = (data ?? [])[0] as { room_id: string } | undefined;
+        if (active?.room_id) await supabase.rpc("leave_room", { _room: active.room_id });
+      })();
+    }
+    setInRoom(false);
+    setSeatIndex(0);
+    setDeadline(null);
+    setRolling(false);
+    rollingRef.current = false;
+    navigate("home");
+  }, [inRoom, navigate]);
+
+
   const reportMatch = useCallback(
     (payload: {
       result: "win" | "loss";
@@ -416,6 +442,13 @@ function LudoShell() {
     [user, sendResult, refreshProfile],
   );
 
+  /** لا ننتظر السيرفر أكثر من ثانيتين حتى لا يتجمّد النرد */
+  const withTimeout = <T,>(promise: Promise<T>, ms: number): Promise<T | null> =>
+    Promise.race([
+      promise.catch(() => null),
+      new Promise<null>((resolve) => window.setTimeout(() => resolve(null), ms)),
+    ]);
+
   // ===== المرحلة 9: رمية موثّقة من السيرفر + خصم من المحفظة =====
   const handleRoll = async () => {
     if (rolling || game.phase !== "roll") return;
@@ -428,8 +461,11 @@ function LudoShell() {
     // كل رمية نرد تخصم من المحفظة (المحفظة تتحدّث لحظيًا عبر Realtime)
     if (user && isOnline()) {
       try {
-        const charge = await payRoll({ data: { cost: ROLL_COST, matchId: matchId.current } });
-        if (!charge.ok) {
+        const charge = await withTimeout(
+          payRoll({ data: { cost: ROLL_COST, matchId: matchId.current } }),
+          2000,
+        );
+        if (charge && !charge.ok) {
           toast.error(
             charge.reason === "insufficient_gold"
               ? `تحتاج ${ROLL_COST} ذهب لرمية النرد — افتح صندوقًا أو أكمل مهمة`
@@ -453,11 +489,11 @@ function LudoShell() {
     let trusted = false;
     try {
       const [res] = await Promise.all([
-        sendRoll({ data: { matchId: matchId.current, seq } }),
+        withTimeout(sendRoll({ data: { matchId: matchId.current, seq } }), 2500),
         spin,
       ]);
-      value = res.value;
-      trusted = Boolean(res.sig);
+      value = res?.value ?? rollDie();
+      trusted = Boolean(res?.sig);
     } catch {
       await spin;
       value = rollDie();
@@ -751,7 +787,7 @@ function LudoShell() {
         onCancel={() => setExitAsk(false)}
         onConfirm={() => {
           setExitAsk(false);
-          navigate(inRoom ? "rooms" : "home");
+          exitMatch();
         }}
       />
       <DominoGame
@@ -782,7 +818,7 @@ function LudoShell() {
         onCancel={() => setExitAsk(false)}
         onConfirm={() => {
           setExitAsk(false);
-          navigate(inRoom ? "rooms" : "home");
+          exitMatch();
         }}
       />
       <GameScreen
