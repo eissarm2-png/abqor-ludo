@@ -59,7 +59,7 @@ export function SecurityScreen() {
     }
     try {
       setSettings(await load({}));
-      setEvents(await loadEvents({}));
+      setEvents((await loadEvents({})) as SecurityEvent[]);
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export function SecurityScreen() {
     setSettings(merged);
     try {
       setSettings(await save({ data: next }));
-      setEvents(await loadEvents({}));
+      setEvents((await loadEvents({})) as SecurityEvent[]);
     } catch {
       toast.error("تعذّر حفظ الإعداد");
       await refresh();
@@ -121,8 +121,8 @@ export function SecurityScreen() {
             } else {
               toast.success("أُرسل رابط تغيير كلمة المرور إلى بريدك");
               try {
-                await logEvent({ data: { action: "password_reset_requested", detail: { email: user.email } } });
-                setEvents(await loadEvents({}));
+                await logEvent({ data: { action: "password_reset_requested", detail: JSON.stringify({ email: user.email }) } });
+                setEvents((await loadEvents({})) as SecurityEvent[]);
               } catch { /* السجل لا يمنع العملية */ }
             }
           }}
