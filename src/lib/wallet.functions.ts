@@ -25,7 +25,7 @@ export const chargeDiceRoll = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: rows, error } = await context.supabase.rpc("charge_dice_roll", {
       _cost: data.cost,
-      _match_id: data.matchId,
+      _match_id: data.matchId ?? undefined,
     });
     if (error) return { ok: false, reason: error.message, gold: 0, diamonds: 0 } satisfies RollCharge;
     const row = (Array.isArray(rows) ? rows[0] : rows) as RollCharge | null;
