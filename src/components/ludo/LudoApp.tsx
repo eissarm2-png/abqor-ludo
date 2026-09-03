@@ -301,6 +301,7 @@ function LudoShell() {
   const startGame = () => {
     initAudio();
     setInRoom(false);
+    setSeatIndex(0);
     setGame(createGame(playerCount, Math.min(humanCount, playerCount)));
     savedFor.current = null;
     matchId.current = crypto.randomUUID();
@@ -316,6 +317,7 @@ function LudoShell() {
   const startSolo = useCallback(() => {
     initAudio();
     setInRoom(false);
+    setSeatIndex(0);
     setHumanCount(1);
     setGame(createGame(gameplay.players, 1));
     savedFor.current = null;
@@ -346,6 +348,9 @@ function LudoShell() {
       initAudio();
       const count = Math.min(4, Math.max(2, launch.names.length)) as 2 | 3 | 4;
       setInRoom(true);
+      setSeatIndex(Math.min(launch.seatIndex ?? 0, count - 1));
+      stateVersion.current = 0;
+      localActed.current = false;
       setPlayerCount(count);
       setHumanCount(count);
       savedFor.current = null;
