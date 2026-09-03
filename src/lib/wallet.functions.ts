@@ -23,10 +23,9 @@ export const chargeDiceRoll = createServerFn({ method: "POST" })
     return { cost, matchId };
   })
   .handler(async ({ data, context }) => {
-    const { data: rows, error } = await context.supabase.rpc("charge_dice_roll", {
-      _cost: data.cost,
-      _match_id: data.matchId ?? undefined,
-    });
+    const args: { _cost: number; _match_id?: string } = { _cost: data.cost };
+    if (data.matchId) args._match_id = data.matchId;
+    const { data: rows, error } = await context.supabase.rpc("charge_dice_roll", args);
     if (error) return { ok: false, reason: error.message, gold: 0, diamonds: 0 } satisfies RollCharge;
     const row = (Array.isArray(rows) ? rows[0] : rows) as RollCharge | null;
     return row ?? ({ ok: false, reason: "unknown", gold: 0, diamonds: 0 } satisfies RollCharge);
