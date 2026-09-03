@@ -626,6 +626,7 @@ function LudoShell() {
         timerActive={timerActive}
         serverSynced={serverSynced}
         meName={game.players.find((p) => !p.isBot)?.name ?? "أنا"}
+        turnSeconds={gameplay.turnSeconds}
         chatContext={{
           myTurn: !player.isBot,
           secondsLeft: Math.ceil(remaining),
