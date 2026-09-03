@@ -1,6 +1,7 @@
-import { Smartphone, Sparkles, Volume2, VolumeX } from "lucide-react";
+import { Gamepad2, Smartphone, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { sfx } from "@/lib/audio";
+import type { GameplayPrefs } from "@/lib/prefs";
 import { cn } from "@/lib/utils";
 
 export function SettingsPanel({
@@ -8,19 +9,23 @@ export function SettingsPanel({
   volume,
   animations,
   haptics,
+  gameplay,
   onMuted,
   onVolume,
   onAnimations,
   onHaptics,
+  onGameplay,
 }: {
   muted: boolean;
   volume: number;
   animations: boolean;
   haptics: boolean;
+  gameplay: GameplayPrefs;
   onMuted: (v: boolean) => void;
   onVolume: (v: number) => void;
   onAnimations: (v: boolean) => void;
   onHaptics: (v: boolean) => void;
+  onGameplay: (v: GameplayPrefs) => void;
 }) {
   return (
     <div className="space-y-3">
