@@ -73,9 +73,11 @@ const time = (iso: string) =>
 export function RoomsPanel({
   meId,
   onLaunch,
+  initialCode = null,
 }: {
   meId: string | null;
   onLaunch: (launch: RoomLaunch) => void;
+  initialCode?: string | null;
 }) {
   const [room, setRoom] = useState<Room | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -228,6 +230,15 @@ export function RoomsPanel({
       setCode("");
       await loadRoom(res.room_id);
     });
+
+  const autoJoined = useRef<string | null>(null);
+  useEffect(() => {
+    if (!initialCode || !meId) return;
+    if (autoJoined.current === initialCode) return;
+    autoJoined.current = initialCode;
+    void joinRoom(initialCode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCode, meId]);
 
   const toggleReady = () =>
     guard(async () => {

@@ -176,6 +176,50 @@ export type Database = {
         }
         Relationships: []
       }
+      game_invites: {
+        Row: {
+          created_at: string
+          from_id: string
+          id: string
+          max_players: number
+          mode: string
+          room_code: string
+          room_id: string | null
+          status: string
+          to_id: string
+        }
+        Insert: {
+          created_at?: string
+          from_id: string
+          id?: string
+          max_players?: number
+          mode?: string
+          room_code: string
+          room_id?: string | null
+          status?: string
+          to_id: string
+        }
+        Update: {
+          created_at?: string
+          from_id?: string
+          id?: string
+          max_players?: number
+          mode?: string
+          room_code?: string
+          room_id?: string | null
+          status?: string
+          to_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_invites_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_results: {
         Row: {
           created_at: string
@@ -283,6 +327,39 @@ export type Database = {
           kind?: string
           read_at?: string | null
           title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      player_settings: {
+        Row: {
+          allow_invites: boolean
+          battery_saver: boolean
+          graphics: string
+          language: string
+          profile_visibility: string
+          show_online: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_invites?: boolean
+          battery_saver?: boolean
+          graphics?: string
+          language?: string
+          profile_visibility?: string
+          show_online?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_invites?: boolean
+          battery_saver?: boolean
+          graphics?: string
+          language?: string
+          profile_visibility?: string
+          show_online?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -905,6 +982,25 @@ export type Database = {
           title: string
         }[]
       }
+      get_player_settings: {
+        Args: never
+        Returns: {
+          allow_invites: boolean
+          battery_saver: boolean
+          graphics: string
+          language: string
+          profile_visibility: string
+          show_online: boolean
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "player_settings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       grant_rewards: {
         Args: {
           _detail: Json
@@ -952,6 +1048,20 @@ export type Database = {
           friendship_id: string
           status: string
           user_id: string
+        }[]
+      }
+      list_game_invites: {
+        Args: never
+        Returns: {
+          created_at: string
+          direction: string
+          id: string
+          max_players: number
+          mode: string
+          other_avatar: string
+          other_name: string
+          room_code: string
+          status: string
         }[]
       }
       list_public_rooms: {
@@ -1030,13 +1140,41 @@ export type Database = {
         }
         Returns: undefined
       }
+      reject_all_game_invites: { Args: never; Returns: Json }
       require_admin: { Args: never; Returns: string }
       reset_room: { Args: { _room: string }; Returns: undefined }
       respond_friend_request: {
         Args: { _accept: boolean; _id: string }
         Returns: Json
       }
+      respond_game_invite: {
+        Args: { _accept: boolean; _id: string }
+        Returns: Json
+      }
+      save_player_settings: {
+        Args: { _settings: Json }
+        Returns: {
+          allow_invites: boolean
+          battery_saver: boolean
+          graphics: string
+          language: string
+          profile_visibility: string
+          show_online: boolean
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "player_settings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       send_friend_request: { Args: { _name: string }; Returns: Json }
+      send_game_invite: {
+        Args: { _room_code: string; _to: string }
+        Returns: Json
+      }
       set_room_ready: {
         Args: { _ready: boolean; _room: string }
         Returns: undefined
