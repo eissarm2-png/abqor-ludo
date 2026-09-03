@@ -947,8 +947,23 @@ function HomeScreen({
         <HotSpot label="لعب 2 لاعبان" onClick={quickPlay} style={{ left: "6%", top: "51.5%", width: "42.5%", height: "16%" }} />
         {/* 4 لاعبين */}
         <HotSpot label="لعب 4 لاعبين" onClick={() => navigate("setup")} style={{ left: "52.5%", top: "51.5%", width: "43%", height: "16%" }} />
-        {/* الوضع الخاص */}
-        <HotSpot label="الوضع الخاص" onClick={dominoPlay} style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }} />
+        {/* غرفة خاصة — تغطي صورة الدومينو القديمة */}
+        <button
+          type="button"
+          onClick={() => navigate("rooms")}
+          aria-label="غرفة خاصة — إنشاء أو انضمام لغرفة 2 أو 4 لاعبين"
+          data-raw
+          className="private-room-tile absolute"
+          style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }}
+        >
+          <span className="private-room-icons" aria-hidden="true">
+            <span>👤</span>
+            <span>👤</span>
+          </span>
+          <b>غرفة خاصة</b>
+          <small>إنشاء أو انضمام بكود</small>
+        </button>
+
         {/* تكوين فريق عبر الإنترنت */}
         <HotSpot label="تكوين فريق عبر الإنترنت" onClick={() => navigate("rooms")} style={{ left: "37.5%", top: "70.8%", width: "29%", height: "11.5%" }} />
         {/* فريق من الأصدقاء */}
