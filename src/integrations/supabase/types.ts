@@ -813,6 +813,7 @@ export type Database = {
           room_id: string
         }[]
       }
+      equip_item: { Args: { _code: string; _kind: string }; Returns: undefined }
       gen_room_code: { Args: never; Returns: string }
       get_chests: {
         Args: never
@@ -920,6 +921,15 @@ export type Database = {
           rarity: string
           reason: string
           xp: number
+        }[]
+      }
+      purchase_store_item: {
+        Args: { _code: string }
+        Returns: {
+          diamonds: number
+          gold: number
+          ok: boolean
+          reason: string
         }[]
       }
       record_game_result: {
