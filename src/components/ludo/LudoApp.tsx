@@ -197,6 +197,11 @@ function LudoShell() {
   const [remaining, setRemaining] = useState(TURN_SECONDS);
   const [serverSynced, setServerSynced] = useState(false);
   const [inRoom, setInRoom] = useState(false);
+  /** فهرس مقعدي داخل players في مباراة الغرفة (0 في اللعب الفردي) */
+  const [seatIndex, setSeatIndex] = useState(0);
+  const stateVersion = useRef(0);
+  const localActed = useRef(false);
+  const matchChannel = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const savedFor = useRef<string | null>(null);
   const matchId = useRef<string>("");
   const matchStart = useRef<number>(0);
