@@ -94,6 +94,7 @@ import { SecurityScreen } from "./SecurityScreen";
 import { ReconnectOverlay } from "./ReconnectOverlay";
 import { MatchmakingScreen } from "./MatchmakingScreen";
 import { ExitConfirm } from "./ExitConfirm";
+import { AccountLinkCard } from "./AccountLinkCard";
 import { useUnreadNotifications } from "@/hooks/useLiveCounts";
 import { NotificationsScreen } from "./NotificationsScreen";
 import { useServerFn } from "@tanstack/react-start";
@@ -739,6 +740,9 @@ function LudoShell() {
         )}
         {screen === "rooms" && (
           <PanelPage title="غرف اللعب" icon={<Users />} onBack={() => navigate("home")}>
+            <Button variant="play" className="mb-3 w-full" onClick={() => navigate("matchmaking")}>
+              <Users className="size-4" /> البحث عن لاعب (مباراة سريعة)
+            </Button>
             <RoomsPanel key={roomsKey} meId={user?.id ?? null} onLaunch={launchRoomMatch} initialCode={inviteCode} />
           </PanelPage>
         )}
@@ -774,6 +778,7 @@ function LudoShell() {
         )}
         {screen === "settings" && (
           <PanelPage title="الإعدادات" icon={<Settings />} onBack={() => navigate("home")}>
+            <AccountLinkCard onOpenAccount={() => navigate("account")} />
             <SettingsPanel
               muted={muted}
               volume={volume}
