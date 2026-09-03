@@ -96,7 +96,23 @@ export function InvitesScreen({ onJoin }: { onJoin: (code: string) => void }) {
                   {tab === "incoming" ? "دعوتك للانضمام إلى غرفة" : "دعوة مرسلة إلى غرفة"}{" "}
                   {MODE_LABEL[inv.mode] ?? inv.mode} — {inv.max_players} لاعبين
                 </p>
-                <p className="mt-1 font-mono text-sm font-bold tracking-widest text-ludo-pink">{inv.room_code}</p>
+                <button
+                  type="button"
+                  className="press-3d mt-1 inline-flex items-center gap-2 rounded-full border border-ludo-gold/50 bg-ludo-plum px-3 py-1"
+                  aria-label="نسخ رمز الدعوة"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(inv.room_code);
+                      toast.success(`تم نسخ رمز الدعوة ${inv.room_code}`);
+                    } catch {
+                      toast.error("تعذّر النسخ، انسخ الرمز يدويًا");
+                    }
+                  }}
+                >
+                  <b className="font-mono text-sm tracking-widest text-ludo-pink">{inv.room_code}</b>
+                  <Copy className="size-4 text-ludo-gold" />
+                </button>
+
                 {inv.status !== "pending" ? (
                   <p className="mt-1 text-xs text-ludo-soft">
                     {inv.status === "accepted" ? "تم القبول" : "تم الرفض"}
