@@ -736,6 +736,17 @@ function LudoShell() {
               onAnimations={changeAnimations}
               onHaptics={changeHaptics}
             />
+            <div className="mt-3 grid gap-2">
+              <Button variant="royal" className="w-full" onClick={() => navigate("dice")}>
+                <Layers className="size-4" /> تخصيص النرد
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("support")}>
+                <BookOpen className="size-4" /> المساعدة والدعم
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("notifications")}>
+                <Bell className="size-4" /> الإشعارات
+              </Button>
+            </div>
           </PanelPage>
         )}
         {screen === "missions" && (
