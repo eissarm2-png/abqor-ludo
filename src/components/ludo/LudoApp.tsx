@@ -1,6 +1,7 @@
 import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Bell,
   BookOpen,
   Bot,
   ChevronLeft,
@@ -81,6 +82,12 @@ import {
 } from "@/lib/audio";
 import { applyAnimations, applyGameplay, DEFAULT_GAMEPLAY, loadAnimations, loadGameplay, saveGameplay, setAnimations as persistAnimations, type GameplayPrefs } from "@/lib/prefs";
 import { StoreScreen } from "./StoreScreen";
+import { FriendsScreen } from "./FriendsScreen";
+import { AchievementsScreen } from "./AchievementsScreen";
+import { DiceSkinScreen } from "./DiceSkinScreen";
+import { SeasonScreen } from "./SeasonScreen";
+import { SupportScreen } from "./SupportScreen";
+import { NotificationsScreen } from "./NotificationsScreen";
 import { useServerFn } from "@tanstack/react-start";
 import { submitMatchResult } from "@/lib/match.functions";
 import { AnnouncementBar } from "./AnnouncementBar";
@@ -122,6 +129,12 @@ type Screen =
   | "ledger"
   | "opened"
   | "store"
+  | "friends"
+  | "achievements"
+  | "dice"
+  | "season"
+  | "support"
+  | "notifications"
   | "domino"
   | "admin"
   | "game";
@@ -723,11 +736,52 @@ function LudoShell() {
               onAnimations={changeAnimations}
               onHaptics={changeHaptics}
             />
+            <div className="mt-3 grid gap-2">
+              <Button variant="royal" className="w-full" onClick={() => navigate("dice")}>
+                <Layers className="size-4" /> تخصيص النرد
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("support")}>
+                <BookOpen className="size-4" /> المساعدة والدعم
+              </Button>
+              <Button variant="royal" className="w-full" onClick={() => navigate("notifications")}>
+                <Bell className="size-4" /> الإشعارات
+              </Button>
+            </div>
           </PanelPage>
         )}
         {screen === "missions" && (
           <PanelPage title="المهام" icon={<Target />} onBack={() => navigate("home")}>
             <MissionsPanel signedIn={Boolean(user)} onWalletChange={() => void refreshProfile()} />
+          </PanelPage>
+        )}
+        {screen === "friends" && (
+          <PanelPage title="الأصدقاء" icon={<Users />} onBack={() => navigate("home")}>
+            <FriendsScreen onInvite={() => navigate("rooms")} />
+          </PanelPage>
+        )}
+        {screen === "notifications" && (
+          <PanelPage title="الإشعارات" icon={<Bell />} onBack={() => navigate("home")}>
+            <NotificationsScreen />
+          </PanelPage>
+        )}
+        {screen === "achievements" && (
+          <PanelPage title="الإنجازات" icon={<Medal />} onBack={() => navigate("home")}>
+            <AchievementsScreen />
+          </PanelPage>
+        )}
+        {screen === "dice" && (
+          <PanelPage title="تخصيص النرد" icon={<Layers />} onBack={() => navigate("home")}>
+            <DiceSkinScreen />
+          </PanelPage>
+        )}
+        {screen === "season" && (
+          <PanelPage title="الموسم الملكي" icon={<Crown />} onBack={() => navigate("home")}>
+            <SeasonScreen onRewards={() => navigate("rewards")} />
+          </PanelPage>
+        )}
+        {screen === "support" && (
+          <PanelPage title="المساعدة والدعم" icon={<BookOpen />} onBack={() => navigate("home")}>
+            <SupportScreen />
           </PanelPage>
         )}
         {screen === "store" && (
@@ -934,9 +988,9 @@ function HomeScreen({
         {/* زر الفيديو / المهام */}
         <HotSpot label="المهام" onClick={() => navigate("missions")} style={{ left: "1.5%", top: "13.8%", width: "15%", height: "6.6%" }} />
         {/* زر النرد / السجل */}
-        <HotSpot label="سجل المباريات" onClick={() => navigate("history")} style={{ left: "1.5%", top: "22.6%", width: "14%", height: "5.4%" }} />
+        <HotSpot label="الإنجازات" onClick={() => navigate("achievements")} style={{ left: "1.5%", top: "22.6%", width: "14%", height: "5.4%" }} />
         {/* بطاقات الجوائز الوسطى */}
-        <HotSpot label="جوائز مقفلة" onClick={() => navigate("rewards")} style={{ left: "33%", top: "13.2%", width: "15%", height: "7.4%" }} />
+        <HotSpot label="الموسم الملكي" onClick={() => navigate("season")} style={{ left: "33%", top: "13.2%", width: "15%", height: "7.4%" }} />
         <HotSpot label="ميجا وين" onClick={() => navigate("tournaments")} style={{ left: "51%", top: "13.2%", width: "15.5%", height: "7.4%" }} />
         {/* الصندوق المقفل يمين */}
         <HotSpot label="الصناديق" onClick={() => navigate("chests")} style={{ left: "86%", top: "15.5%", width: "12%", height: "5%" }} />
@@ -958,7 +1012,7 @@ function HomeScreen({
         <HotSpot label="فريق من الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "70%", top: "70.8%", width: "29%", height: "11.5%" }} />
         {/* الشريط السفلي */}
         <HotSpot label="المتجر" onClick={() => navigate("store")} style={{ left: "0%", top: "86.5%", width: "19%", height: "12%" }} />
-        <HotSpot label="الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "19%", top: "86.5%", width: "20%", height: "12%" }} />
+        <HotSpot label="الأصدقاء" onClick={() => navigate("friends")} style={{ left: "19%", top: "86.5%", width: "20%", height: "12%" }} />
         <HotSpot label="الصفحة الرئيسية" onClick={() => navigate("home")} style={{ left: "39%", top: "84.5%", width: "23%", height: "14%" }} />
         <HotSpot label="الأندية" onClick={() => navigate("leaderboard")} style={{ left: "62%", top: "86.5%", width: "19%", height: "12%" }} />
         <HotSpot label="حزالة" onClick={() => navigate("opened")} style={{ left: "81%", top: "86.5%", width: "19%", height: "12%" }} />
@@ -1242,7 +1296,7 @@ function SettingBlock({ title, children }: { title: string; children: React.Reac
 function BottomNav({ active, navigate }: { active: Screen; navigate: (s: Screen) => void }) {
   const links: [Screen, string, string][] = [
     ["store", navStore, "المتجر"],
-    ["rooms", navFriends, "الأصدقاء"],
+    ["friends", navFriends, "الأصدقاء"],
     ["home", navHome, "الصفحة الرئيسية"],
     ["leaderboard", navTrophy, "الأندية"],
     ["opened", chestOpen, "جوائز"],
