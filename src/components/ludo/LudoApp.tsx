@@ -32,6 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import brandMark from "@/assets/brand-mark.png";
 import homeUi from "@/assets/home-ui.jpeg.asset.json";
+import privateRoomImg from "@/assets/private-room.jpeg.asset.json";
 
 
 import coinStack from "@/assets/coin-stack.png";
@@ -946,8 +947,16 @@ function HomeScreen({
         <HotSpot label="لعب 2 لاعبان" onClick={quickPlay} style={{ left: "6%", top: "51.5%", width: "42.5%", height: "16%" }} />
         {/* 4 لاعبين */}
         <HotSpot label="لعب 4 لاعبين" onClick={() => navigate("setup")} style={{ left: "52.5%", top: "51.5%", width: "43%", height: "16%" }} />
-        {/* غرفة خاصة — منطقة شفافة فوق الخلفية المدمجة */}
-        <HotSpot label="الوضع الخاص — إنشاء أو انضمام لغرفة 2 أو 4 لاعبين" onClick={() => navigate("rooms")} style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }} />
+        {/* غرفة خاصة — صورة الوضع الخاص كما هي */}
+        <button
+          aria-label="الوضع الخاص — إنشاء أو انضمام لغرفة 2 أو 4 لاعبين"
+          onClick={() => navigate("rooms")}
+          data-raw
+          className="absolute cursor-pointer overflow-hidden rounded-xl border-0 bg-transparent p-0"
+          style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }}
+        >
+          <img src={privateRoomImg.url} alt="الوضع الخاص" className="size-full object-cover" draggable={false} />
+        </button>
 
 
         {/* تكوين فريق عبر الإنترنت */}
