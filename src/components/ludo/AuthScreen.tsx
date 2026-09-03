@@ -81,6 +81,7 @@ export function AuthPanel() {
             هذا الحساب موقوف حاليًا{profile.banned_reason ? ` — ${profile.banned_reason}` : ""}
           </p>
         )}
+        <RecoveryPasswordForm />
         <ProfileNameForm current={profile?.display_name ?? ""} onSaved={refreshProfile} />
         <Button variant="ghostGold" className="w-full" onClick={() => void signOut()}>
           <LogOut /> تسجيل الخروج
@@ -252,6 +253,60 @@ function StatBox({ label, value }: { label: string; value: number }) {
     <div className="rounded-xl border border-ludo-gold/40 bg-ludo-panel/80 p-2">
       <b className="block text-lg text-ludo-gold">{value}</b>
       <small className="text-[10px] text-ludo-soft">{label}</small>
+    </div>
+  );
+}
+
+/** نموذج تعيين كلمة مرور جديدة بعد فتح رابط الاستعادة من البريد */
+function RecoveryPasswordForm() {
+  const [visible, setVisible] = useState(false);
+  const [value, setValue] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const hash = url.hash.toLowerCase();
+    if (url.searchParams.get("recovery") === "1" || hash.includes("type=recovery")) {
+      setVisible(true);
+    }
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setVisible(true);
+    });
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  if (!visible) return null;
+
+  const save = async () => {
+    setBusy(true);
+    setError(null);
+    setNote(null);
+    const { error: err } = await supabase.auth.updateUser({ password: value });
+    if (err) setError("تعذّر تحديث كلمة المرور، تأكد أنها 8 أحرف فأكثر");
+    else {
+      setNote("تم تحديث كلمة المرور بنجاح");
+      setValue("");
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div className="coin-card space-y-2">
+      <b className="block text-ludo-gold">تعيين كلمة مرور جديدة</b>
+      <Input
+        type="password"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="كلمة المرور الجديدة"
+        autoComplete="new-password"
+      />
+      {error && <p className="text-xs text-destructive-foreground">{error}</p>}
+      {note && <p className="text-xs text-ludo-palm">{note}</p>}
+      <Button variant="royal" className="w-full" disabled={busy || value.length < 8} onClick={() => void save()}>
+        حفظ كلمة المرور
+      </Button>
     </div>
   );
 }
