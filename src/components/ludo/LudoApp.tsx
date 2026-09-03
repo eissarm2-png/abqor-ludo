@@ -855,6 +855,27 @@ function Brand() {
   );
 }
 
+function HotSpot({
+  label,
+  onClick,
+  style,
+}: {
+  label: string;
+  onClick: () => void;
+  style: React.CSSProperties;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="absolute rounded-2xl outline-none transition active:scale-[.96] focus-visible:ring-2 focus-visible:ring-white/70"
+      style={{ ...style, position: "absolute" }}
+    />
+  );
+}
+
 function HomeScreen({
   navigate,
   quickPlay,
@@ -866,135 +887,65 @@ function HomeScreen({
   dominoPlay: () => void;
   isAdmin?: boolean;
 }) {
-  const { profile } = useAuth();
-  const level = profile?.level ?? 1;
-  const xp = profile?.xp ?? 0;
-  const gold = profile?.gold ?? 0;
-  const diamonds = profile?.diamonds ?? 0;
-
   return (
-    <main className="relative -mt-1 space-y-4 pb-28">
-      {/* الشريط العلوي: الحساب والعملات والإعدادات */}
-      <header className="flex items-start gap-2">
-        <button
-          type="button"
-          onClick={() => navigate("account")}
-          className="press-3d relative shrink-0"
-          aria-label="حسابي"
-        >
-          <img
-            src={avatarTiger}
-            alt=""
-            width={512}
-            height={512}
-            className="size-[3.6rem] rounded-full border-[3px] border-ludo-gold bg-ludo-plum object-cover shadow-[0_4px_0_#3a0d31,0_0_14px_rgb(255_212_94/.35)]"
-          />
-          <span className="absolute -bottom-2 -start-1 flex items-center gap-1 rounded-full border border-ludo-gold/80 bg-ludo-plum px-1.5 py-px text-[10px] font-black text-ludo-gold">
-            ⭐ {level} / {Math.max(50, level * 50)}
-          </span>
-        </button>
-
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
-          <StatPill
-            icon={<Coins className="size-4 text-ludo-gold" />}
-            value={gold.toLocaleString("en-US")}
-            onClick={() => navigate("chests")}
-          />
-          <StatPill
-            icon={<Gem className="size-4 text-ludo-palm" />}
-            value={String(diamonds)}
-            onClick={() => navigate("chests")}
-          />
-          <StatPill
-            icon={<Sparkles className="size-4 text-ludo-pink" />}
-            value={`${xp} XP`}
-            onClick={() => navigate("missions")}
-          />
-        </div>
-
-        <button
-          type="button"
-          onClick={() => navigate("settings")}
-          aria-label="الإعدادات"
-          className="press-3d grid size-10 shrink-0 place-items-center rounded-full border border-ludo-gold/60 bg-ludo-plum text-ludo-gold shadow-[0_3px_0_#3a0d31]"
-        >
-          <Settings className="size-5" />
-        </button>
-      </header>
-
-      {/* أزرار جانبية: المهام والسجل */}
-      <div className="flex items-start gap-3">
-        <div className="flex flex-col gap-2">
-          <SideButton
-            img={modeMissions}
-            label="المهام"
-            badge="6"
-            onClick={() => navigate("missions")}
-          />
-          <SideButton img={diceRoyal} label="السجل" onClick={() => navigate("history")} />
-        </div>
-
-        {/* لافتة العرض */}
-        <button
-          type="button"
-          onClick={() => navigate("chests")}
-          className="press-3d relative flex flex-1 items-center gap-2 overflow-hidden rounded-2xl border-2 border-ludo-gold bg-[linear-gradient(180deg,#3a0d31,#25061f)] p-2 text-right shadow-[0_5px_0_#25061f,0_10px_20px_rgb(0_0_0/.45)]"
-        >
-          <span className="absolute -start-1 top-1 rotate-[-14deg] rounded-md bg-ludo-ruby px-2 py-px text-[10px] font-black text-white shadow">
-            صفقة حاسمة
-          </span>
-          <img src={coinStack} alt="" width={512} height={512} className="asset-shine size-16" />
-          <span className="min-w-0 flex-1">
-            <b className="block text-base text-ludo-gold">تعزيز الذهب!</b>
-            <small className="block text-[11px] text-ludo-soft">30K ذهب فوري</small>
-          </span>
-          <span className="rounded-lg border border-white/25 bg-ludo-green px-2 py-1 text-xs font-black text-white shadow-[0_3px_0_#4d8a22]">
-            افتح الآن
-          </span>
-        </button>
-      </div>
-
-      {/* العلامة المائية */}
-      <h2 className="select-none py-2 text-center font-display text-4xl font-black text-white/10">
-        عبقور اللودو
-      </h2>
-
-      {/* أوضاع اللعب الأساسية */}
-      <div className="grid grid-cols-2 gap-3">
-        <BigModeCard tone="gold" img={mode2p} title="2 لاعبان" onClick={quickPlay} />
-        <BigModeCard tone="violet" img={mode4p} title="4 لاعبين" onClick={() => navigate("setup")} />
-      </div>
-
-      {/* أوضاع إضافية */}
-      <div className="grid grid-cols-3 gap-2">
-        <MiniModeCard
-          img={modeDomino}
-          title="الوضع الخاص"
-          icon={<Crown className="size-4" />}
-          onClick={dominoPlay}
+    <main className="relative -mx-3 -mt-3 pb-4">
+      <div className="relative w-full" style={{ aspectRatio: "705 / 1568" }}>
+        <img
+          src={homeUi.url}
+          alt="واجهة عبقور اللودو"
+          className="absolute inset-0 h-full w-full select-none object-cover"
+          draggable={false}
         />
-        <MiniModeCard
-          img={navFriends}
-          title="تكوين فريق عبر الإنترنت"
-          icon={<Users className="size-4" />}
-          onClick={() => navigate("rooms")}
-        />
-        <MiniModeCard
-          img={navTrophy}
-          title="فريق من الأصدقاء"
-          icon={<MessageSquare className="size-4" />}
-          onClick={() => navigate("rooms")}
-        />
+        {/* الحساب */}
+        <HotSpot label="حسابي" onClick={() => navigate("account")} style={{ left: "2.5%", top: "5%", width: "17.5%", height: "8%" }} />
+        {/* الوقت / المكافآت */}
+        <HotSpot label="المكافآت" onClick={() => navigate("rewards")} style={{ left: "23%", top: "6.6%", width: "22%", height: "3.6%" }} />
+        {/* الذهب */}
+        <HotSpot label="الذهب" onClick={() => navigate("chests")} style={{ left: "47.5%", top: "6.6%", width: "19.5%", height: "3.6%" }} />
+        {/* الجواهر */}
+        <HotSpot label="الجواهر" onClick={() => navigate("chests")} style={{ left: "68.5%", top: "6.6%", width: "19%", height: "3.6%" }} />
+        {/* الإعدادات */}
+        <HotSpot label="الإعدادات" onClick={() => navigate("settings")} style={{ left: "90%", top: "6.2%", width: "9%", height: "4.2%" }} />
+        {/* زر الفيديو / المهام */}
+        <HotSpot label="المهام" onClick={() => navigate("missions")} style={{ left: "1.5%", top: "13.8%", width: "15%", height: "6.6%" }} />
+        {/* زر النرد / السجل */}
+        <HotSpot label="سجل المباريات" onClick={() => navigate("history")} style={{ left: "1.5%", top: "22.6%", width: "14%", height: "5.4%" }} />
+        {/* بطاقات الجوائز الوسطى */}
+        <HotSpot label="جوائز مقفلة" onClick={() => navigate("rewards")} style={{ left: "33%", top: "13.2%", width: "15%", height: "7.4%" }} />
+        <HotSpot label="ميجا وين" onClick={() => navigate("tournaments")} style={{ left: "51%", top: "13.2%", width: "15.5%", height: "7.4%" }} />
+        {/* الصندوق المقفل يمين */}
+        <HotSpot label="الصناديق" onClick={() => navigate("chests")} style={{ left: "86%", top: "15.5%", width: "12%", height: "5%" }} />
+        {/* لافتة تعزيز الذهب */}
+        <HotSpot label="تعزيز الذهب" onClick={() => navigate("chests")} style={{ left: "20%", top: "21.8%", width: "62%", height: "8.6%" }} />
+        {/* 2 لاعبان */}
+        <HotSpot label="لعب 2 لاعبان" onClick={quickPlay} style={{ left: "6%", top: "51.5%", width: "42.5%", height: "16%" }} />
+        {/* 4 لاعبين */}
+        <HotSpot label="لعب 4 لاعبين" onClick={() => navigate("setup")} style={{ left: "52.5%", top: "51.5%", width: "43%", height: "16%" }} />
+        {/* الوضع الخاص */}
+        <HotSpot label="الوضع الخاص" onClick={dominoPlay} style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }} />
+        {/* تكوين فريق عبر الإنترنت */}
+        <HotSpot label="تكوين فريق عبر الإنترنت" onClick={() => navigate("rooms")} style={{ left: "37.5%", top: "70.8%", width: "29%", height: "11.5%" }} />
+        {/* فريق من الأصدقاء */}
+        <HotSpot label="فريق من الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "70%", top: "70.8%", width: "29%", height: "11.5%" }} />
+        {/* الشريط السفلي */}
+        <HotSpot label="المتجر" onClick={() => navigate("chests")} style={{ left: "0%", top: "86.5%", width: "19%", height: "12%" }} />
+        <HotSpot label="الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "19%", top: "86.5%", width: "20%", height: "12%" }} />
+        <HotSpot label="الصفحة الرئيسية" onClick={() => navigate("home")} style={{ left: "39%", top: "84.5%", width: "23%", height: "14%" }} />
+        <HotSpot label="الأندية" onClick={() => navigate("leaderboard")} style={{ left: "62%", top: "86.5%", width: "19%", height: "12%" }} />
+        <HotSpot label="حزالة" onClick={() => navigate("opened")} style={{ left: "81%", top: "86.5%", width: "19%", height: "12%" }} />
       </div>
 
       {isAdmin && (
-        <Button variant="royal" size="xl" className="w-full" onClick={() => navigate("admin")}>
-          <ShieldCheck /> لوحة تحكم المشرف
-        </Button>
+        <div className="px-3 pt-3">
+          <Button variant="royal" size="xl" className="w-full" onClick={() => navigate("admin")}>
+            <ShieldCheck /> لوحة تحكم المشرف
+          </Button>
+        </div>
       )}
     </main>
   );
 }
+
 
 function StatPill({
   icon,
