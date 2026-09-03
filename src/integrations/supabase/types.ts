@@ -954,6 +954,15 @@ export type Database = {
         Args: { _amount: number; _metric: string; _uid: string }
         Returns: undefined
       }
+      charge_dice_roll: {
+        Args: { _cost?: number; _match_id?: string }
+        Returns: {
+          diamonds: number
+          gold: number
+          ok: boolean
+          reason: string
+        }[]
+      }
       claim_mission: {
         Args: { _code: string }
         Returns: {
