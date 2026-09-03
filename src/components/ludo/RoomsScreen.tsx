@@ -12,6 +12,7 @@ import {
   Send,
   Users,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { sfx } from "@/lib/audio";
@@ -334,7 +335,10 @@ export function RoomsPanel({
             type="button"
             className="room-code press-3d"
             onClick={() => {
-              void navigator.clipboard?.writeText(room.code);
+              void navigator.clipboard
+                ?.writeText(room.code)
+                .then(() => toast.success(`تم نسخ رمز الغرفة ${room.code}`))
+                .catch(() => toast.error("تعذّر النسخ، انسخ الرمز يدويًا"));
               setCopied(true);
               sfx.tap();
               window.setTimeout(() => setCopied(false), 1600);

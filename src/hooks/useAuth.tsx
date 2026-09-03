@@ -104,6 +104,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, [loadProfile, syncRole]);
 
+  /** تحديث فوري للمحفظة (ذهب/جواهر/خبرة) عند أي تغيير في الملف — بدون تحديث يدوي */
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`profile-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}` },
+        (payload) => setProfile(payload.new as Profile),
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+
+
   const value: AuthValue = {
     user,
     session,
