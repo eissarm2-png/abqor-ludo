@@ -99,6 +99,7 @@ import { useUnreadNotifications } from "@/hooks/useLiveCounts";
 import { NotificationsScreen } from "./NotificationsScreen";
 import { useServerFn } from "@tanstack/react-start";
 import { submitMatchResult } from "@/lib/match.functions";
+import { chargeDiceRoll } from "@/lib/wallet.functions";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { enqueueResult, flushQueue, isOnline, onReconnect } from "@/lib/offline-queue";
 import { forfeitServerTurn, rollServerDie, startServerTurn } from "@/lib/live.functions";
@@ -121,6 +122,8 @@ import { SEATS } from "@/lib/ludo/board";
 import { cn } from "@/lib/utils";
 
 const TURN_SECONDS = 15;
+/** رسوم رمية النرد بالذهب — تُخصم من المحفظة في كل رمية */
+const ROLL_COST = 2;
 
 type Screen =
   | "home"
@@ -203,6 +206,7 @@ function LudoShell() {
   const turnSig = useRef<string | null>(null);
   const rollingRef = useRef(false);
   const sendResult = useServerFn(submitMatchResult);
+  const payRoll = useServerFn(chargeDiceRoll);
 
   // تفريغ طابور النتائج المؤجّلة عند تسجيل الدخول أو عودة الاتصال
   useEffect(() => {
@@ -302,6 +306,24 @@ function LudoShell() {
     showCelebration(1600);
   };
 
+  /** لعب فردي فوري: يبدأ تلقائيًا بدون غرفة ولا انتظار، أنا + روبوتات */
+  const startSolo = useCallback(() => {
+    initAudio();
+    setInRoom(false);
+    setHumanCount(1);
+    setGame(createGame(gameplay.players, 1));
+    savedFor.current = null;
+    matchId.current = crypto.randomUUID();
+    matchStart.current = Date.now();
+    moveCount.current = 0;
+    setEvents([]);
+    sfx.start();
+    setScreen("game");
+    showCelebration(1600);
+    toast.success("بدأ اللعب الفردي — كل رمية نرد تخصم من محفظتك والفوز يضيف مكافأة");
+  }, [gameplay.players, showCelebration]);
+
+
   const startDomino = () => {
     initAudio();
     setInRoom(false);
@@ -363,23 +385,51 @@ function LudoShell() {
       }
 
       void sendResult({ data: entry })
-        .then(() => refreshProfile())
+        .then((res) => {
+          // مكافأة الفوز الحقيقية تظهر فورًا في المحفظة والنقاط
+          if (res?.ok && !res.duplicate && payload.result === "win") {
+            toast.success(
+              `فوز! +${res.gold} ذهب • +${res.points} نقطة • +${res.xp} خبرة`,
+            );
+          }
+          return refreshProfile();
+        })
         .catch(() => {
           enqueueResult(entry);
         });
+
     },
     [user, sendResult, refreshProfile],
   );
 
-  // ===== المرحلة 9: رمية موثّقة من السيرفر =====
+  // ===== المرحلة 9: رمية موثّقة من السيرفر + خصم من المحفظة =====
   const handleRoll = async () => {
     if (rolling || game.phase !== "roll") return;
     initAudio();
+
+    // كل رمية نرد تخصم من المحفظة (المحفظة تتحدّث لحظيًا عبر Realtime)
+    if (user && isOnline()) {
+      try {
+        const charge = await payRoll({ data: { cost: ROLL_COST, matchId: matchId.current } });
+        if (!charge.ok) {
+          toast.error(
+            charge.reason === "insufficient_gold"
+              ? `تحتاج ${ROLL_COST} ذهب لرمية النرد — افتح صندوقًا أو أكمل مهمة`
+              : "تعذّر خصم رسوم الرمية، حاول مرة أخرى",
+          );
+          return;
+        }
+      } catch {
+        // تعذّر الاتصال: نكمل الرمية محليًا ولا نعطّل اللعب
+      }
+    }
+
     rollingRef.current = true;
     setRolling(true);
     sfx.diceRoll();
     haptics.diceRoll();
     const seq = (rollSeq.current += 1);
+
     const spin = new Promise((resolve) => window.setTimeout(resolve, 620));
     let value = 0;
     let trusted = false;
@@ -724,7 +774,7 @@ function LudoShell() {
         {screen === "home" && (
           <HomeScreen
             navigate={navigate}
-            quickPlay={startGame}
+            quickPlay={startSolo}
             isAdmin={isAdmin}
           />
         )}
@@ -1523,6 +1573,10 @@ function GameScreen({
           >
             {muted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
           </button>
+          <span className="room-gems">
+            <img src={coinStack} alt="" width={512} height={512} loading="lazy" />
+            <b>{profile?.gold ?? 0}</b>
+          </span>
           <span className="room-gems">
             <img src={gemEmerald} alt="" width={512} height={512} loading="lazy" />
             <b>{profile?.diamonds ?? 0}</b>
