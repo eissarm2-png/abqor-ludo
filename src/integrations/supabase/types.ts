@@ -545,6 +545,30 @@ export type Database = {
         }
         Relationships: []
       }
+      security_events: {
+        Row: {
+          action: string
+          created_at: string
+          detail: Json
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          detail?: Json
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       store_items: {
         Row: {
           active: boolean
@@ -1076,8 +1100,28 @@ export type Database = {
           name: string
         }[]
       }
+      list_security_events: {
+        Args: { _limit?: number }
+        Returns: {
+          action: string
+          created_at: string
+          detail: Json
+          id: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "security_events"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       log_admin: {
         Args: { _action: string; _detail: Json; _target: string }
+        Returns: undefined
+      }
+      log_security_event: {
+        Args: { _action: string; _detail?: Json }
         Returns: undefined
       }
       mark_notifications_read: { Args: { _id?: string }; Returns: Json }
