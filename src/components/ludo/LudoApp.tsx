@@ -290,6 +290,9 @@ function LudoShell() {
     [game],
   );
   const player = currentPlayer(game);
+  /** في الغرف: يتحكم كل لاعب بدوره فقط، أما محليًا فالجهاز يتحكم بكل الأدوار البشرية */
+  const isMyTurn = !inRoom || game.turn === seatIndex;
+
 
   const navigate = useCallback((next: Screen) => {
     initAudio();
