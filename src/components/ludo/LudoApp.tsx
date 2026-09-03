@@ -1574,6 +1574,10 @@ function GameScreen({
             {muted ? <VolumeX className="size-5" /> : <Volume2 className="size-5" />}
           </button>
           <span className="room-gems">
+            <img src={coinStack} alt="" width={512} height={512} loading="lazy" />
+            <b>{profile?.gold ?? 0}</b>
+          </span>
+          <span className="room-gems">
             <img src={gemEmerald} alt="" width={512} height={512} loading="lazy" />
             <b>{profile?.diamonds ?? 0}</b>
           </span>
