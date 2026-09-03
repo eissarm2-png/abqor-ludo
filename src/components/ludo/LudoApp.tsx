@@ -179,6 +179,7 @@ function LudoShell() {
   const [animations, setAnimations] = useState(true);
   const [gameplay, setGameplay] = useState<GameplayPrefs>(DEFAULT_GAMEPLAY);
   const [celebrate, setCelebrate] = useState(false);
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
   const [deadline, setDeadline] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(TURN_SECONDS);
