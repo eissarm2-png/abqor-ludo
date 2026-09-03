@@ -672,7 +672,6 @@ function LudoShell() {
           <HomeScreen
             navigate={navigate}
             quickPlay={startGame}
-            dominoPlay={startDomino}
             isAdmin={isAdmin}
           />
         )}
@@ -905,12 +904,10 @@ function HotSpot({
 function HomeScreen({
   navigate,
   quickPlay,
-  dominoPlay,
   isAdmin,
 }: {
   navigate: (s: Screen) => void;
   quickPlay: () => void;
-  dominoPlay: () => void;
   isAdmin?: boolean;
 }) {
   return (
@@ -947,14 +944,29 @@ function HomeScreen({
         <HotSpot label="لعب 2 لاعبان" onClick={quickPlay} style={{ left: "6%", top: "51.5%", width: "42.5%", height: "16%" }} />
         {/* 4 لاعبين */}
         <HotSpot label="لعب 4 لاعبين" onClick={() => navigate("setup")} style={{ left: "52.5%", top: "51.5%", width: "43%", height: "16%" }} />
-        {/* الوضع الخاص */}
-        <HotSpot label="الوضع الخاص" onClick={dominoPlay} style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }} />
+        {/* غرفة خاصة — تغطي صورة الدومينو القديمة */}
+        <button
+          type="button"
+          onClick={() => navigate("rooms")}
+          aria-label="غرفة خاصة — إنشاء أو انضمام لغرفة 2 أو 4 لاعبين"
+          data-raw
+          className="private-room-tile absolute"
+          style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }}
+        >
+          <span className="private-room-icons" aria-hidden="true">
+            <span>👤</span>
+            <span>👤</span>
+          </span>
+          <b>غرفة خاصة</b>
+          <small>إنشاء أو انضمام بكود</small>
+        </button>
+
         {/* تكوين فريق عبر الإنترنت */}
         <HotSpot label="تكوين فريق عبر الإنترنت" onClick={() => navigate("rooms")} style={{ left: "37.5%", top: "70.8%", width: "29%", height: "11.5%" }} />
         {/* فريق من الأصدقاء */}
         <HotSpot label="فريق من الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "70%", top: "70.8%", width: "29%", height: "11.5%" }} />
         {/* الشريط السفلي */}
-        <HotSpot label="المتجر" onClick={() => navigate("chests")} style={{ left: "0%", top: "86.5%", width: "19%", height: "12%" }} />
+        <HotSpot label="المتجر" onClick={() => navigate("store")} style={{ left: "0%", top: "86.5%", width: "19%", height: "12%" }} />
         <HotSpot label="الأصدقاء" onClick={() => navigate("rooms")} style={{ left: "19%", top: "86.5%", width: "20%", height: "12%" }} />
         <HotSpot label="الصفحة الرئيسية" onClick={() => navigate("home")} style={{ left: "39%", top: "84.5%", width: "23%", height: "14%" }} />
         <HotSpot label="الأندية" onClick={() => navigate("leaderboard")} style={{ left: "62%", top: "86.5%", width: "19%", height: "12%" }} />
