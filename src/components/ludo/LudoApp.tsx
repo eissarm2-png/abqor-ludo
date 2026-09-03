@@ -419,6 +419,10 @@ function LudoShell() {
   // ===== المرحلة 9: رمية موثّقة من السيرفر + خصم من المحفظة =====
   const handleRoll = async () => {
     if (rolling || game.phase !== "roll") return;
+    if (!isMyTurn) {
+      toast.info("انتظر دورك — الآن دور " + player.name);
+      return;
+    }
     initAudio();
 
     // كل رمية نرد تخصم من المحفظة (المحفظة تتحدّث لحظيًا عبر Realtime)
@@ -460,6 +464,7 @@ function LudoShell() {
       trusted = false;
     }
     setVerified(trusted);
+    localActed.current = true;
     setGame((g) => {
       const next = applyRoll(g, value);
       if (next.turn !== g.turn)
@@ -534,8 +539,12 @@ function LudoShell() {
   );
 
   const handleToken = (id: string) => {
+    if (!isMyTurn) return;
     const move = moves.find((item) => item.tokenId === id);
-    if (move) setGame((g) => commitMove(g, move));
+    if (move) {
+      localActed.current = true;
+      setGame((g) => commitMove(g, move));
+    }
   };
 
   // نوبة الروبوت
@@ -571,15 +580,18 @@ function LudoShell() {
 
   // حركة وحيدة تُنفّذ تلقائيًا
   useEffect(() => {
-    if (game.phase !== "move" || player.isBot || moves.length !== 1) return;
+    if (game.phase !== "move" || player.isBot || moves.length !== 1 || !isMyTurn) return;
     const only = moves[0];
     if (!only) return;
-    const timer = window.setTimeout(() => setGame((g) => commitMove(g, only)), 420);
+    const timer = window.setTimeout(() => {
+      localActed.current = true;
+      setGame((g) => commitMove(g, only));
+    }, 420);
     return () => window.clearTimeout(timer);
-  }, [game.phase, game.turn, game.dice, player.isBot, moves, commitMove]);
+  }, [game.phase, game.turn, game.dice, player.isBot, moves, commitMove, isMyTurn]);
 
   // ===== المرحلة 12: مؤقت 15 ثانية بتوقيت السيرفر =====
-  const timerActive = screen === "game" && game.phase !== "over" && !player.isBot;
+  const timerActive = screen === "game" && game.phase !== "over" && !player.isBot && isMyTurn;
 
   useEffect(() => {
     if (!timerActive) {
@@ -631,6 +643,7 @@ function LudoShell() {
           haptics.turnPass();
           setDeadline(null);
           setVerified(false);
+          localActed.current = true;
           setGame((g) => forfeitTurn(g));
         };
         if (!sig) {
@@ -649,6 +662,42 @@ function LudoShell() {
     return () => window.clearInterval(tick);
   }, [timerActive, deadline, game.turn, endTurn]);
 
+  // ===== مزامنة مباراة الغرفة لحظيًا بين أجهزة اللاعبين =====
+  useEffect(() => {
+    if (!inRoom || screen !== "game" || !matchId.current) return;
+    const channel = supabase
+      .channel(`match:${matchId.current}`, { config: { broadcast: { self: false } } })
+      .on("broadcast", { event: "state" }, ({ payload }) => {
+        const data = payload as { v: number; state: GameState };
+        if (!data?.state || data.v <= stateVersion.current) return;
+        stateVersion.current = data.v;
+        localActed.current = false;
+        setRolling(false);
+        rollingRef.current = false;
+        setGame(data.state);
+      })
+      .subscribe();
+    matchChannel.current = channel;
+    return () => {
+      matchChannel.current = null;
+      void supabase.removeChannel(channel);
+    };
+  }, [inRoom, screen]);
+
+  // بث الحالة بعد كل حركة أقوم بها حتى تظهر فورًا عند الخصم
+  useEffect(() => {
+    if (!inRoom || !localActed.current) return;
+    localActed.current = false;
+    const channel = matchChannel.current;
+    if (!channel) return;
+    stateVersion.current += 1;
+    void channel.send({
+      type: "broadcast",
+      event: "state",
+      payload: { v: stateVersion.current, state: game },
+    });
+  }, [game, inRoom]);
+
   // احتفال + حفظ النتيجة (يتم التحقق منها في السيرفر)
   useEffect(() => {
     if (game.phase !== "over" || game.winner === null) return;
@@ -656,7 +705,9 @@ function LudoShell() {
     haptics.win();
     showCelebration(4200);
 
-    const mySeat = game.players.find((p) => !p.isBot)?.seat;
+    const mySeat = inRoom
+      ? game.players[seatIndex]?.seat
+      : game.players.find((p) => !p.isBot)?.seat;
     if (mySeat !== undefined) {
       reportMatch({
         result: game.winner === mySeat ? "win" : "loss",
@@ -665,7 +716,7 @@ function LudoShell() {
         mode: "ludo",
       });
     }
-  }, [game.phase, game.winner, game.players, reportMatch, showCelebration]);
+  }, [game.phase, game.winner, game.players, inRoom, seatIndex, reportMatch, showCelebration]);
 
   if (stage === "splash") {
     return <SplashScreen onDone={() => setStage(guestReady() || user ? "app" : "gate")} />;
@@ -745,7 +796,9 @@ function LudoShell() {
         remaining={remaining}
         timerActive={timerActive}
         serverSynced={serverSynced}
-        meName={game.players.find((p) => !p.isBot)?.name ?? "أنا"}
+        mySeatIndex={inRoom ? seatIndex : -1}
+        myTurn={isMyTurn}
+        meName={(inRoom ? game.players[seatIndex]?.name : game.players.find((p) => !p.isBot)?.name) ?? "أنا"}
         turnSeconds={gameplay.turnSeconds}
         chatContext={{
           myTurn: !player.isBot,
@@ -1496,6 +1549,8 @@ function GameScreen({
   remaining,
   timerActive,
   serverSynced,
+  mySeatIndex,
+  myTurn: myTurnProp,
   meName,
   turnSeconds,
   chatContext,
@@ -1516,6 +1571,8 @@ function GameScreen({
   remaining: number;
   timerActive: boolean;
   serverSynced: boolean;
+  mySeatIndex: number;
+  myTurn: boolean;
   meName: string;
   turnSeconds: number;
   chatContext?: ChatContext | undefined;
@@ -1533,14 +1590,15 @@ function GameScreen({
   const [chatTab, setChatTab] = useState<"quick" | "emoji" | "text">("quick");
 
   // ترتيب المقاعد كما في التصميم: أنا بالأسفل يمين اللوحة، والخصوم بالأعلى/الأسفل المقابل
-  const mySeat = state.players.find((p) => !p.isBot)?.seat ?? 0;
+  const mySeat =
+    (mySeatIndex >= 0 ? state.players[mySeatIndex]?.seat : state.players.find((p) => !p.isBot)?.seat) ?? 0;
   const others = state.players.filter((p) => p.seat !== mySeat);
   const me = state.players.find((p) => p.seat === mySeat)!;
   const topLeft = others[1] ?? null;
   const topRight = others[0] ?? null;
   const bottomRight = others[2] ?? null;
 
-  const myTurn = player.seat === mySeat && !player.isBot;
+  const myTurn = myTurnProp && player.seat === mySeat && !player.isBot;
   const pct = timerActive ? Math.max(0, Math.min(1, remaining / turnSeconds)) : 1;
 
   return (
@@ -1642,7 +1700,7 @@ function GameScreen({
                 <Dice
                   value={state.dice}
                   rolling={rolling}
-                  disabled={state.phase !== "roll" || player.isBot}
+                  disabled={state.phase !== "roll" || player.isBot || !myTurn}
                   onRoll={onRoll}
                   seatToken={seat.token}
                   verified={verified}
