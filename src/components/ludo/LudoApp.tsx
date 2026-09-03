@@ -32,7 +32,6 @@ import {
 import { Button } from "@/components/ui/button";
 import brandMark from "@/assets/brand-mark.png";
 import homeUi from "@/assets/home-ui.jpeg.asset.json";
-import privateRoomImg from "@/assets/private-room.jpeg.asset.json";
 
 
 import coinStack from "@/assets/coin-stack.png";
