@@ -26,6 +26,8 @@ export type RoomLaunch = {
   matchId: string;
   mode: RoomMode;
   names: string[];
+  /** فهرس مقعدي داخل ترتيب اللاعبين حتى يعرف كل جهاز دوره الحقيقي */
+  seatIndex: number;
 };
 
 type Room = {
