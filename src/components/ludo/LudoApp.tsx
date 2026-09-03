@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import brandMark from "@/assets/brand-mark.png";
+import homeUi from "@/assets/home-ui.jpeg.asset.json";
 import coinStack from "@/assets/coin-stack.png";
 import gemEmerald from "@/assets/gem-emerald.png";
 import giftBox from "@/assets/gift-box.png";
@@ -737,7 +738,7 @@ function LudoShell() {
             <AuthPanel />
           </PanelPage>
         )}
-        <BottomNav active={screen} navigate={navigate} />
+        {screen !== "home" && <BottomNav active={screen} navigate={navigate} />}
       </div>
       {celebrate && <Confetti />}
     </div>
