@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, Coins, Gem, Loader2, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/components/auth/AuthProvider";
+import { useAuth } from "@/hooks/useAuth";
 import { buyStoreItem, equipItem, listStore, type StoreItem } from "@/lib/store.functions";
 import { cn } from "@/lib/utils";
 
