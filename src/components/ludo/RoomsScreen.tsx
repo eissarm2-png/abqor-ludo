@@ -182,6 +182,14 @@ export function RoomsPanel({
     if (!room || room.status !== "playing" || !room.match_id) return;
     if (launched.current === room.match_id) return;
     if (members.length < 2) return;
+    // لا نُعيد اللاعب لمباراة خرج منها بإرادته
+    try {
+      const raw = localStorage.getItem("abqor:left-matches");
+      const left: string[] = raw ? JSON.parse(raw) : [];
+      if (left.includes(room.match_id)) return;
+    } catch {
+      /* التخزين المحلي قد يكون معطّلًا */
+    }
     launched.current = room.match_id;
     const seatIndex = Math.max(0, members.findIndex((m) => m.user_id === meId));
     onLaunch({
