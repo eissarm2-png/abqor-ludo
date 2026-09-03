@@ -381,10 +381,19 @@ function LudoShell() {
       }
 
       void sendResult({ data: entry })
-        .then(() => refreshProfile())
+        .then((res) => {
+          // مكافأة الفوز الحقيقية تظهر فورًا في المحفظة والنقاط
+          if (res?.ok && !res.duplicate && payload.result === "win") {
+            toast.success(
+              `فوز! +${res.gold} ذهب • +${res.points} نقطة • +${res.xp} خبرة`,
+            );
+          }
+          return refreshProfile();
+        })
         .catch(() => {
           enqueueResult(entry);
         });
+
     },
     [user, sendResult, refreshProfile],
   );
