@@ -398,15 +398,34 @@ function LudoShell() {
     [user, sendResult, refreshProfile],
   );
 
-  // ===== المرحلة 9: رمية موثّقة من السيرفر =====
+  // ===== المرحلة 9: رمية موثّقة من السيرفر + خصم من المحفظة =====
   const handleRoll = async () => {
     if (rolling || game.phase !== "roll") return;
     initAudio();
+
+    // كل رمية نرد تخصم من المحفظة (المحفظة تتحدّث لحظيًا عبر Realtime)
+    if (user && isOnline()) {
+      try {
+        const charge = await payRoll({ data: { cost: ROLL_COST, matchId: matchId.current } });
+        if (!charge.ok) {
+          toast.error(
+            charge.reason === "insufficient_gold"
+              ? `تحتاج ${ROLL_COST} ذهب لرمية النرد — افتح صندوقًا أو أكمل مهمة`
+              : "تعذّر خصم رسوم الرمية، حاول مرة أخرى",
+          );
+          return;
+        }
+      } catch {
+        // تعذّر الاتصال: نكمل الرمية محليًا ولا نعطّل اللعب
+      }
+    }
+
     rollingRef.current = true;
     setRolling(true);
     sfx.diceRoll();
     haptics.diceRoll();
     const seq = (rollSeq.current += 1);
+
     const spin = new Promise((resolve) => window.setTimeout(resolve, 620));
     let value = 0;
     let trusted = false;
