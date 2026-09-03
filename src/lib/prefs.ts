@@ -66,3 +66,41 @@ export function setNoiseReduction(value: boolean) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(NOISE_KEY, value ? "1" : "0");
 }
+
+/* ===== إعدادات اللعب (عدد اللاعبين، وقت الدور، سرعة القطع) ===== */
+
+const PLAY_KEY = "abqor-gameplay";
+
+export type GameplayPrefs = {
+  players: 2 | 3 | 4;
+  turnSeconds: number;
+  moveMs: number;
+};
+
+export const DEFAULT_GAMEPLAY: GameplayPrefs = { players: 4, turnSeconds: 15, moveMs: 300 };
+
+export function loadGameplay(): GameplayPrefs {
+  if (typeof window === "undefined") return DEFAULT_GAMEPLAY;
+  try {
+    const raw = window.localStorage.getItem(PLAY_KEY);
+    if (!raw) return DEFAULT_GAMEPLAY;
+    const p = JSON.parse(raw) as Partial<GameplayPrefs>;
+    const players = ([2, 3, 4] as const).includes(p.players as 2) ? (p.players as 2 | 3 | 4) : 4;
+    const turnSeconds = Math.min(60, Math.max(5, Number(p.turnSeconds) || 15));
+    const moveMs = Math.min(900, Math.max(80, Number(p.moveMs) || 300));
+    return { players, turnSeconds, moveMs };
+  } catch {
+    return DEFAULT_GAMEPLAY;
+  }
+}
+
+export function saveGameplay(value: GameplayPrefs) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(PLAY_KEY, JSON.stringify(value));
+  applyGameplay(value);
+}
+
+export function applyGameplay(value: GameplayPrefs) {
+  if (typeof document === "undefined") return;
+  document.documentElement.style.setProperty("--token-move", `${value.moveMs}ms`);
+}

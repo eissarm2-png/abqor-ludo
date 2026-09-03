@@ -64,7 +64,7 @@ export function LudoBoard({ state, moves, onTokenClick }: Props) {
             onClick={() => onTokenClick(t.id)}
             aria-label={`قطعة ${seat.label}`}
             className={cn(
-              "absolute grid place-items-center transition-[left,top] duration-300 ease-out",
+              "absolute grid place-items-center transition-[left,top] ease-out",
               movable ? "z-20 cursor-pointer" : "z-10 cursor-default",
             )}
             style={{
@@ -73,6 +73,7 @@ export function LudoBoard({ state, moves, onTokenClick }: Props) {
               width: `${size}%`,
               height: `${size}%`,
               transform: "translate(-50%, -50%)",
+              transitionDuration: "var(--token-move, 300ms)",
             }}
           >
 

@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
@@ -76,7 +77,8 @@ import {
   setVolume as persistVolume,
   sfx,
 } from "@/lib/audio";
-import { applyAnimations, loadAnimations, setAnimations as persistAnimations } from "@/lib/prefs";
+import { applyAnimations, applyGameplay, DEFAULT_GAMEPLAY, loadAnimations, loadGameplay, saveGameplay, setAnimations as persistAnimations, type GameplayPrefs } from "@/lib/prefs";
+import { StoreScreen } from "./StoreScreen";
 import { useServerFn } from "@tanstack/react-start";
 import { submitMatchResult } from "@/lib/match.functions";
 import { AnnouncementBar } from "./AnnouncementBar";
@@ -117,6 +119,7 @@ type Screen =
   | "chests"
   | "ledger"
   | "opened"
+  | "store"
   | "domino"
   | "admin"
   | "game";
@@ -150,6 +153,7 @@ function LudoShell() {
   const [events, setEvents] = useState<MatchEvent[]>([]);
   const [volume, setVolume] = useState(0.6);
   const [animations, setAnimations] = useState(true);
+  const [gameplay, setGameplay] = useState<GameplayPrefs>(DEFAULT_GAMEPLAY);
   const [celebrate, setCelebrate] = useState(false);
   const [verified, setVerified] = useState(false);
   const [deadline, setDeadline] = useState<number | null>(null);
@@ -172,7 +176,10 @@ function LudoShell() {
     if (!user) return;
     const flush = () => {
       void flushQueue((data) => sendResult({ data })).then((n) => {
-        if (n > 0) void refreshProfile();
+        if (n > 0) {
+          toast.success(`تمت مزامنة ${n} نتيجة محفوظة دون اتصال`);
+          void refreshProfile();
+        }
       });
     };
     flush();
@@ -189,6 +196,10 @@ function LudoShell() {
     const anim = loadAnimations();
     setAnimations(anim);
     applyAnimations(anim);
+    const gp = loadGameplay();
+    setGameplay(gp);
+    applyGameplay(gp);
+    setPlayerCount(gp.players);
   }, []);
 
   const changeVolume = (next: number) => {
@@ -200,6 +211,12 @@ function LudoShell() {
     setHaptic(next);
     persistHaptics(next);
     if (next) haptics.tap();
+  };
+
+  const changeGameplay = (next: GameplayPrefs) => {
+    setGameplay(next);
+    saveGameplay(next);
+    if (!inRoom) setPlayerCount(next.players);
   };
 
   const changeAnimations = (next: boolean) => {
@@ -474,7 +491,7 @@ function LudoShell() {
     }
     let alive = true;
     warned.current = 0;
-    setRemaining(TURN_SECONDS);
+    setRemaining(gameplay.turnSeconds);
     void openTurn({ data: { matchId: matchId.current, turn: game.turn } })
       .then((res) => {
         if (!alive) return;
@@ -486,14 +503,14 @@ function LudoShell() {
       .catch(() => {
         if (!alive) return;
         turnSig.current = null;
-        setDeadline(Date.now() + TURN_SECONDS * 1000);
+        setDeadline(Date.now() + gameplay.turnSeconds * 1000);
         setServerSynced(false);
       });
     return () => {
       alive = false;
     };
     // بداية دور جديدة لكل لاعب
-  }, [timerActive, game.turn, openTurn]);
+  }, [timerActive, game.turn, openTurn, gameplay.turnSeconds]);
 
   useEffect(() => {
     if (!timerActive || deadline === null) return;
@@ -613,6 +630,7 @@ function LudoShell() {
         timerActive={timerActive}
         serverSynced={serverSynced}
         meName={game.players.find((p) => !p.isBot)?.name ?? "أنا"}
+        turnSeconds={gameplay.turnSeconds}
         chatContext={{
           myTurn: !player.isBot,
           secondsLeft: Math.ceil(remaining),
@@ -697,6 +715,8 @@ function LudoShell() {
               volume={volume}
               animations={animations}
               haptics={haptic}
+              gameplay={gameplay}
+              onGameplay={changeGameplay}
               onMuted={(v) => toggleMute(v)}
               onVolume={changeVolume}
               onAnimations={changeAnimations}
@@ -707,6 +727,11 @@ function LudoShell() {
         {screen === "missions" && (
           <PanelPage title="المهام" icon={<Target />} onBack={() => navigate("home")}>
             <MissionsPanel signedIn={Boolean(user)} onWalletChange={() => void refreshProfile()} />
+          </PanelPage>
+        )}
+        {screen === "store" && (
+          <PanelPage title="المتجر" icon={<Gift />} onBack={() => navigate("home")}>
+            <StoreScreen />
           </PanelPage>
         )}
         {screen === "chests" && (
@@ -1213,7 +1238,7 @@ function SettingBlock({ title, children }: { title: string; children: React.Reac
 
 function BottomNav({ active, navigate }: { active: Screen; navigate: (s: Screen) => void }) {
   const links: [Screen, string, string][] = [
-    ["chests", navStore, "المتجر"],
+    ["store", navStore, "المتجر"],
     ["rooms", navFriends, "الأصدقاء"],
     ["home", navHome, "الصفحة الرئيسية"],
     ["leaderboard", navTrophy, "الأندية"],
@@ -1248,6 +1273,7 @@ function GameScreen({
   timerActive,
   serverSynced,
   meName,
+  turnSeconds,
   chatContext,
   onMute,
   onRoll,
@@ -1267,6 +1293,7 @@ function GameScreen({
   timerActive: boolean;
   serverSynced: boolean;
   meName: string;
+  turnSeconds: number;
   chatContext?: ChatContext | undefined;
   onMute: () => void;
   onRoll: () => void;
@@ -1290,7 +1317,7 @@ function GameScreen({
   const bottomRight = others[2] ?? null;
 
   const myTurn = player.seat === mySeat && !player.isBot;
-  const pct = timerActive ? Math.max(0, Math.min(1, remaining / 15)) : 1;
+  const pct = timerActive ? Math.max(0, Math.min(1, remaining / turnSeconds)) : 1;
 
   return (
     <div className="ludo-shell min-h-screen" dir="rtl">
