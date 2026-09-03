@@ -99,6 +99,7 @@ import { useUnreadNotifications } from "@/hooks/useLiveCounts";
 import { NotificationsScreen } from "./NotificationsScreen";
 import { useServerFn } from "@tanstack/react-start";
 import { submitMatchResult } from "@/lib/match.functions";
+import { chargeDiceRoll } from "@/lib/wallet.functions";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { enqueueResult, flushQueue, isOnline, onReconnect } from "@/lib/offline-queue";
 import { forfeitServerTurn, rollServerDie, startServerTurn } from "@/lib/live.functions";
@@ -121,6 +122,8 @@ import { SEATS } from "@/lib/ludo/board";
 import { cn } from "@/lib/utils";
 
 const TURN_SECONDS = 15;
+/** رسوم رمية النرد بالذهب — تُخصم من المحفظة في كل رمية */
+const ROLL_COST = 2;
 
 type Screen =
   | "home"
@@ -203,6 +206,7 @@ function LudoShell() {
   const turnSig = useRef<string | null>(null);
   const rollingRef = useRef(false);
   const sendResult = useServerFn(submitMatchResult);
+  const payRoll = useServerFn(chargeDiceRoll);
 
   // تفريغ طابور النتائج المؤجّلة عند تسجيل الدخول أو عودة الاتصال
   useEffect(() => {
@@ -770,7 +774,7 @@ function LudoShell() {
         {screen === "home" && (
           <HomeScreen
             navigate={navigate}
-            quickPlay={startGame}
+            quickPlay={startSolo}
             isAdmin={isAdmin}
           />
         )}
