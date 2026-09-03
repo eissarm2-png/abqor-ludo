@@ -104,3 +104,42 @@ export function applyGameplay(value: GameplayPrefs) {
   if (typeof document === "undefined") return;
   document.documentElement.style.setProperty("--token-move", `${value.moveMs}ms`);
 }
+
+/* ===== شكل النرد المختار ===== */
+
+const DICE_KEY = "abqor-dice-skin";
+
+export type DiceSkin = {
+  code: string;
+  label: string;
+  face: string;
+  pip: string;
+  needWins: number;
+};
+
+export const DICE_SKINS: DiceSkin[] = [
+  { code: "classic", label: "كلاسيكي", face: "#f8fafc", pip: "#0f172a", needWins: 0 },
+  { code: "ruby", label: "ياقوت", face: "#dc2626", pip: "#fff1f2", needWins: 0 },
+  { code: "lagoon", label: "أزرق", face: "#2563eb", pip: "#eff6ff", needWins: 0 },
+  { code: "gold", label: "ذهبي", face: "#f6c32c", pip: "#3b2600", needWins: 5 },
+  { code: "royal", label: "بنفسجي", face: "#7c3aed", pip: "#f5f3ff", needWins: 15 },
+  { code: "palm", label: "أخضر", face: "#16a34a", pip: "#ecfdf5", needWins: 30 },
+];
+
+export function loadDiceSkin(): string {
+  if (typeof window === "undefined") return "classic";
+  return window.localStorage.getItem(DICE_KEY) ?? "classic";
+}
+
+export function saveDiceSkin(code: string) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(DICE_KEY, code);
+  applyDiceSkin(code);
+}
+
+export function applyDiceSkin(code: string) {
+  if (typeof document === "undefined") return;
+  const skin = DICE_SKINS.find((s) => s.code === code) ?? DICE_SKINS[0]!;
+  document.documentElement.style.setProperty("--dice-face", skin.face);
+  document.documentElement.style.setProperty("--dice-pip", skin.pip);
+}

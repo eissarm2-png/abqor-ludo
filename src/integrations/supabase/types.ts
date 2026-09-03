@@ -149,6 +149,33 @@ export type Database = {
         }
         Relationships: []
       }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       game_results: {
         Row: {
           created_at: string
@@ -227,6 +254,36 @@ export type Database = {
           reward_xp?: number
           sort?: number
           title?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -885,6 +942,18 @@ export type Database = {
         }[]
       }
       leave_room: { Args: { _room: string }; Returns: undefined }
+      list_friends: {
+        Args: never
+        Returns: {
+          avatar: string
+          created_at: string
+          direction: string
+          display_name: string
+          friendship_id: string
+          status: string
+          user_id: string
+        }[]
+      }
       list_public_rooms: {
         Args: never
         Returns: {
@@ -901,6 +970,7 @@ export type Database = {
         Args: { _action: string; _detail: Json; _target: string }
         Returns: undefined
       }
+      mark_notifications_read: { Args: { _id?: string }; Returns: Json }
       mission_period_start: { Args: { _period: string }; Returns: string }
       my_active_room: {
         Args: never
@@ -962,6 +1032,11 @@ export type Database = {
       }
       require_admin: { Args: never; Returns: string }
       reset_room: { Args: { _room: string }; Returns: undefined }
+      respond_friend_request: {
+        Args: { _accept: boolean; _id: string }
+        Returns: Json
+      }
+      send_friend_request: { Args: { _name: string }; Returns: Json }
       set_room_ready: {
         Args: { _ready: boolean; _room: string }
         Returns: undefined
