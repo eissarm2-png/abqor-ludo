@@ -175,7 +175,10 @@ function LudoShell() {
     if (!user) return;
     const flush = () => {
       void flushQueue((data) => sendResult({ data })).then((n) => {
-        if (n > 0) void refreshProfile();
+        if (n > 0) {
+          toast.success(`تمت مزامنة ${n} نتيجة محفوظة دون اتصال`);
+          void refreshProfile();
+        }
       });
     };
     flush();
