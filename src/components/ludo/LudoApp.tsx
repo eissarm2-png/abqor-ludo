@@ -948,18 +948,19 @@ function HomeScreen({
         <button
           type="button"
           onClick={() => navigate("rooms")}
-          aria-label="غرفة خاصة — إنشاء أو انضمام لغرفة 2 أو 4 لاعبين"
+          aria-label="الوضع الخاص — إنشاء أو انضمام لغرفة 2 أو 4 لاعبين"
           data-raw
           className="private-room-tile absolute"
           style={{ left: "6%", top: "70.8%", width: "29%", height: "11.5%" }}
         >
-          <span className="private-room-icons" aria-hidden="true">
-            <span>👤</span>
-            <span>👤</span>
-          </span>
-          <b>غرفة خاصة</b>
-          <small>إنشاء أو انضمام بكود</small>
+          <img
+            src={privateRoomArt.url}
+            alt="الوضع الخاص"
+            loading="lazy"
+            className="size-full rounded-[inherit] object-cover"
+          />
         </button>
+
 
         {/* تكوين فريق عبر الإنترنت */}
         <HotSpot label="تكوين فريق عبر الإنترنت" onClick={() => navigate("rooms")} style={{ left: "37.5%", top: "70.8%", width: "29%", height: "11.5%" }} />
