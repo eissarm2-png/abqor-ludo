@@ -672,7 +672,6 @@ function LudoShell() {
           <HomeScreen
             navigate={navigate}
             quickPlay={startGame}
-            dominoPlay={startDomino}
             isAdmin={isAdmin}
           />
         )}
@@ -905,12 +904,10 @@ function HotSpot({
 function HomeScreen({
   navigate,
   quickPlay,
-  dominoPlay,
   isAdmin,
 }: {
   navigate: (s: Screen) => void;
   quickPlay: () => void;
-  dominoPlay: () => void;
   isAdmin?: boolean;
 }) {
   return (
