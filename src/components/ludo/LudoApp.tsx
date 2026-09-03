@@ -506,7 +506,7 @@ function LudoShell() {
       alive = false;
     };
     // بداية دور جديدة لكل لاعب
-  }, [timerActive, game.turn, openTurn]);
+  }, [timerActive, game.turn, openTurn, gameplay.turnSeconds]);
 
   useEffect(() => {
     if (!timerActive || deadline === null) return;
@@ -1268,6 +1268,7 @@ function GameScreen({
   timerActive,
   serverSynced,
   meName,
+  turnSeconds,
   chatContext,
   onMute,
   onRoll,
@@ -1287,6 +1288,7 @@ function GameScreen({
   timerActive: boolean;
   serverSynced: boolean;
   meName: string;
+  turnSeconds: number;
   chatContext?: ChatContext | undefined;
   onMute: () => void;
   onRoll: () => void;
@@ -1310,7 +1312,7 @@ function GameScreen({
   const bottomRight = others[2] ?? null;
 
   const myTurn = player.seat === mySeat && !player.isBot;
-  const pct = timerActive ? Math.max(0, Math.min(1, remaining / 15)) : 1;
+  const pct = timerActive ? Math.max(0, Math.min(1, remaining / turnSeconds)) : 1;
 
   return (
     <div className="ludo-shell min-h-screen" dir="rtl">
