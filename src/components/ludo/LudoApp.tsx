@@ -92,6 +92,9 @@ import { ProfileScreen } from "./ProfileScreen";
 import { WalletScreen } from "./WalletScreen";
 import { SecurityScreen } from "./SecurityScreen";
 import { ReconnectOverlay } from "./ReconnectOverlay";
+import { MatchmakingScreen } from "./MatchmakingScreen";
+import { ExitConfirm } from "./ExitConfirm";
+import { useUnreadNotifications } from "@/hooks/useLiveCounts";
 import { NotificationsScreen } from "./NotificationsScreen";
 import { useServerFn } from "@tanstack/react-start";
 import { submitMatchResult } from "@/lib/match.functions";
@@ -140,6 +143,7 @@ type Screen =
   | "season"
   | "support"
   | "invites"
+  | "matchmaking"
   | "profile"
   | "wallet"
   | "security"
@@ -178,6 +182,9 @@ function LudoShell() {
   const [volume, setVolume] = useState(0.6);
   const [animations, setAnimations] = useState(true);
   const [gameplay, setGameplay] = useState<GameplayPrefs>(DEFAULT_GAMEPLAY);
+  const [exitAsk, setExitAsk] = useState(false);
+  const [roomsKey, setRoomsKey] = useState(0);
+  const { count: unreadCount } = useUnreadNotifications();
   const [celebrate, setCelebrate] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
@@ -622,12 +629,21 @@ function LudoShell() {
 
   if (screen === "domino") {
     return (
+      <>
+      <ExitConfirm
+        open={exitAsk}
+        onCancel={() => setExitAsk(false)}
+        onConfirm={() => {
+          setExitAsk(false);
+          navigate(inRoom ? "rooms" : "home");
+        }}
+      />
       <DominoGame
         playerCount={playerCount}
         humanCount={humanCount}
         muted={muted}
         onMute={() => toggleMute()}
-        onHome={() => navigate(inRoom ? "rooms" : "home")}
+        onHome={() => setExitAsk(true)}
         onFinish={({ winnerSeat, mySeat, players, moves }) => {
           showCelebration(3200);
           reportMatch({
@@ -638,11 +654,21 @@ function LudoShell() {
           });
         }}
       />
+      </>
     );
   }
 
   if (screen === "game") {
     return (
+      <>
+      <ExitConfirm
+        open={exitAsk}
+        onCancel={() => setExitAsk(false)}
+        onConfirm={() => {
+          setExitAsk(false);
+          navigate(inRoom ? "rooms" : "home");
+        }}
+      />
       <GameScreen
         state={game}
         moves={moves}
@@ -673,10 +699,11 @@ function LudoShell() {
 
         onRoll={handleRoll}
         onToken={handleToken}
-        onHome={() => navigate(inRoom ? "rooms" : "home")}
+        onHome={() => setExitAsk(true)}
         onRules={() => navigate("rules")}
         onRestart={startGame}
       />
+      </>
     );
   }
 
@@ -712,7 +739,20 @@ function LudoShell() {
         )}
         {screen === "rooms" && (
           <PanelPage title="غرف اللعب" icon={<Users />} onBack={() => navigate("home")}>
-            <RoomsPanel meId={user?.id ?? null} onLaunch={launchRoomMatch} initialCode={inviteCode} />
+            <RoomsPanel key={roomsKey} meId={user?.id ?? null} onLaunch={launchRoomMatch} initialCode={inviteCode} />
+          </PanelPage>
+        )}
+        {screen === "matchmaking" && (
+          <PanelPage title="البحث عن لاعب" icon={<Users />} onBack={() => navigate("home")}>
+            <MatchmakingScreen
+              mode="ludo"
+              maxPlayers={playerCount}
+              onJoined={(code) => {
+                setInviteCode(code);
+                navigate("rooms");
+              }}
+              onCancel={() => navigate("home")}
+            />
           </PanelPage>
         )}
         {screen === "rewards" && <RewardsScreen onBack={() => navigate("home")} />}
@@ -755,6 +795,11 @@ function LudoShell() {
               </Button>
               <Button variant="royal" className="w-full" onClick={() => navigate("notifications")}>
                 <Bell className="size-4" /> الإشعارات
+                {unreadCount > 0 && (
+                  <span className="ms-1 grid min-w-6 place-items-center rounded-full bg-ludo-ruby px-1 text-[11px] font-black text-ludo-soft">
+                    {unreadCount}
+                  </span>
+                )}
               </Button>
               <Button variant="royal" className="w-full" onClick={() => navigate("profile")}>
                 <UserCircle2 className="size-4" /> الملف الشخصي
@@ -868,7 +913,12 @@ function LudoShell() {
         {screen !== "home" && <BottomNav active={screen} navigate={navigate} />}
       </div>
       {celebrate && <Confetti />}
-      <ReconnectOverlay />
+      <ReconnectOverlay
+        onResync={async () => {
+          await refreshProfile();
+          setRoomsKey((k) => k + 1);
+        }}
+      />
     </div>
   );
 }
